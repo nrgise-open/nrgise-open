@@ -1,0 +1,15 @@
+:root {
+	--md-primary-fg-color: rgb(51, 51, 51);
+	--md-primary-fg-color--light: rgb(68, 68, 68);
+	--md-primary-fg-color--dark: rgb(34, 34, 34);
+	--md-accent-fg-color: rgb(242, 145, 9);
+	--md-typeset-a-color: rgb(242, 145, 9);
+}
+
+.md-typeset hr {
+	border: 0;
+	height: 0.25rem;
+	margin: 2rem 0;
+	background-color: #000;
+	border-radius: 999px;
+}

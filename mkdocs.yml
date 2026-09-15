@@ -1,0 +1,100 @@
+site_name: NRGISE Open Docs
+site_description: Energy system simulation framework documentation
+repo_url: https://github.com/nrgise-open/nrgise-open
+
+theme:
+  name: material
+  favicon: img/favicon.ico
+  logo: img/empty.svg
+
+extra_css:
+  - shared/section-divider.css
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/install.md
+    - Quickstart: getting-started/quickstart.md
+    - Conventions: getting-started/conventions.md
+  - User Guide:
+    - Core Design: user-guide/core-design.md
+    - Simulation Flow: user-guide/simulation-flow.md
+    - Extending NRGISE: user-guide/extending.md
+    - Batch Run: user-guide/batch-run.md
+    - Analyse Results: user-guide/analyse-results.md
+  - API Reference: 
+    - Energy System: api/energy-system.md
+    - Simulation: api/simulation.md
+    - Batch Run: api/batch-run.md
+    - State: api/state.md
+    - Components: 
+      - Mixins: api/components/components.md
+      - Data Profiles (PV, Load, ...): api/components/data-profile-components.md
+      - Grid: api/components/grid.md
+      - Storage: api/components/storage.md
+    - Controllers: 
+      - Base Class: api/controllers/controller.md
+      - Single Application: api/controllers/single-application.md
+      - Multi Application: api/controllers/multi-application.md
+    - Economics:
+      - Core: api/economics/core.md
+      - Summary: api/economics/summary.md      
+      - Helper: api/economics/helper.md      
+      - C&I Bill Calculator: api/economics/c-i-bill-calculator.md      
+    - Forecasting: api/forecasting.md
+    - Tools: api/tools.md
+  - Contributing: contributing/contributing.md
+  - Reference:
+    - Citing: reference/citing.md
+    - License: reference/license.md
+  - About Us: about-us.md
+  - Legal:
+    - Data Privacy: data-privacy.md
+    - Imprint: imprint.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths:
+            - .
+          options:
+            docstring_style: google
+            heading_level: 1
+            merge_init_into_class: true
+            parameter_headings: false
+            separate_signature: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_object_full_path: true
+            show_source: false
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            type_parameter_headings: true
+            show_signature_annotations: true
+            summary: false
+            show_inheritance_diagram: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - md_in_html
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - toc:
+      toc_depth: 2
+      permalink: true
+      title: On this page
+
+copyright: >-
+  &copy Copyright  | CC BY-NC-SA 4.0
+
+extra:
+  social:
+  - icon: fontawesome/brands/github
+    link: https://github.com/nrgise-open/nrgise-open
+  - icon: fontawesome/solid/globe
+    link: https://www.ise.fraunhofer.de/de/geschaeftsfelder/elektrische-energiespeicher/batterieintegration-und-betriebsfuehrung.html
