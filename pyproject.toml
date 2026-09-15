@@ -1,0 +1,96 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nrgise"
+version = "0.6.08"
+description = "The Python framework for simulating battery-powered microgrids over time"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent"
+]
+dependencies = [
+    "pandas",
+    "numpy",
+    "matplotlib",
+    "tqdm",
+    "pyomo"
+]
+
+[project.optional-dependencies]
+dev = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "ruff==0.9.1",
+    "pytest",
+    "mypy",
+    "pandas-stubs",
+    "tqdm-stubs",
+    "build",
+    "twine",
+    "commitizen",
+    "pytest-cov",
+]
+
+[project.urls]
+Homepage = "https://github.com/nrgise-open/nrgise-open"
+
+[tool.setuptools]
+packages = ["nrgise"]
+
+[tool.setuptools.package-data]
+"nrgise" = ["py.typed"]
+
+[tool.ruff]
+line-length = 130
+
+[tool.ruff.lint]
+select = [
+    "E", "W", # pycodestyle
+    "F", # pyflakes
+    "I", # import sorting
+    "N", # naming conventions
+    "BLE", # no blind except (catching any exeception)
+    "B", # bugbear -> common gotchas in python
+    "COM", # comma formatting
+    "C4", # list/dict/... comprehension
+    "RET", # unnecessary returns
+    "SIM", # simplifications
+    "ARG", # unused arguments
+    "ERA", # commented out code is bad (use git)
+    "PD", # special pandas hints
+    "RUF", # extra gotchas
+]
+
+ignore = [
+    "B028", # explicit stacklevel of warnings > 1, to have a larger stacktrace
+    "B024", # abstract base class without abstract methods
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401", "F403"]
+
+[tool.mypy]
+warn_return_any = true
+warn_unused_configs = true
+check_untyped_defs = true
+
+[[tool.mypy.overrides]] # Only have the stricer mode for nrgise folder not tests
+module = ["nrgise", "nrgise.*"]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[[tool.mypy.overrides]]
+module = ["pyomo", "pyomo.environ"]
+ignore_missing_imports = true
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version_provider = "pep621"
+tag_format = "v$version"
+version_files = ["pyproject.toml:version"]
+update_changelog_on_bump = true
