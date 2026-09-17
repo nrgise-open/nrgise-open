@@ -1,0 +1,146 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+
+permissions:
+  contents: write
+  pull-requests: read
+  issues: read
+
+env:
+  PIP_CACHE_DIR: ${{ github.workspace }}/.cache/pip
+
+jobs:
+  ruff_check:
+    name: Ruff Check
+    runs-on: ubuntu-latest
+    steps:
+      - &checkout_repo
+        name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - &setup_conda_39
+        name: Set up conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: nrgise
+          auto-activate-base: false
+          auto-update-conda: true
+          channels: conda-forge
+          miniforge-version: latest
+          python-version: '3.9'
+
+      - &install_project
+        name: Install project
+        shell: bash -el {0}
+        run: |
+          conda install pip -y
+          conda install libgomp libgcc-ng -y
+          bash scripts/install.sh --dev
+
+      - &verify_install
+        name: Verify installation
+        shell: bash -el {0}
+        run: |
+          python --version
+          pip --version
+
+      - name: Check formatting
+        shell: bash -el {0}
+        run: ruff check .
+
+  mypy_check:
+    name: Mypy Check
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout_repo
+      - *setup_conda_39
+      - *install_project
+      - *verify_install
+
+      - name: Check types
+        shell: bash -el {0}
+        run: mypy nrgise tests examples
+
+  version_check:
+    name: Version Check
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout_repo
+
+      - name: Check version on pull requests
+        shell: bash
+        run: bash scripts/check_version.sh
+
+  python-tests:
+    name: Python Tests (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: nrgise
+          auto-activate-base: false
+          auto-update-conda: true
+          channels: conda-forge
+          miniforge-version: latest
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install project
+        shell: bash -el {0}
+        run: |
+          conda install pip -y
+          conda install libgomp libgcc-ng -y
+          bash scripts/install.sh --dev
+
+      - name: Run tests
+        shell: bash -el {0}
+        run: pytest --cov=nrgise --cov-fail-under=80 --cov-report=term --cov-report=json:coverage.json
+
+  release:
+    name: Update Changelog
+    runs-on: ubuntu-latest
+    needs: [ruff_check, mypy_check, python-tests]
+    if: github.event_name == 'push' && github.ref_name == 'main'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Read package version
+        id: package_version
+        shell: bash
+        run: |
+          version="$(python3 - <<'PY'
+          from pathlib import Path
+          import tomllib
+
+          pyproject = tomllib.loads(Path('pyproject.toml').read_text(encoding='utf-8'))
+          print(pyproject['project']['version'])
+          PY
+          )"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Update changelog
+        uses: release-drafter/release-drafter@v6
+        with:
+          config-name: release.yaml
+          version: ${{ steps.package_version.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

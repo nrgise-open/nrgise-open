@@ -1,0 +1,26 @@
+name-template: 'Release v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+
+template: |
+  ## What's Changed
+
+  $CHANGES
+
+  ## New Contributors
+
+  $CONTRIBUTORS
+
+changelog:
+  categories:
+    - title: "Features"
+      labels: ["feature", "feat", "new"]
+    - title: "Bug Fixes"
+      labels: ["bug", "fix", "hotfix", "patch", "bugfix"]
+    - title: "Documentation"
+      labels: ["documentation", "docs", "doc"]
+    - title: "Refactoring"
+      labels: ["refactor", "refactoring", "cleanup"]
+    - title: "Tests"
+      labels: ["test", "tests", "unittest", "pytest", "mypy", "ruff"]
+    - title: "Other Changes"
+      labels: ["*"]
