@@ -63,6 +63,6 @@ If none of these tools fit your list, see [OpenMod for a broader tool comparison
 
     NRGISE source code 
 
-    [:octicons-arrow-right-24: Repository](https://gitlab.cc-asp.fraunhofer.de/iseels/asy/nrgise)
+    [:octicons-arrow-right-24: Repository](https://github.com/nrgise-open/nrgise-open)
 
 </div>
