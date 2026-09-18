@@ -113,7 +113,49 @@ jobs:
         shell: bash -el {0}
         run: pytest --cov=nrgise --cov-fail-under=80 --cov-report=term --cov-report=json:coverage.json
 
+  build-documentation:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout_repo
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+
+      - name: Install project and documentation dependencies
+        run: python -m pip install --editable '.[dev]'
+
+      - name: Build documentation
+        run: mkdocs build --strict
+
+      - name: Upload GitHub Pages artifact
+        if: github.event_name == 'push' && github.ref_name == 'main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy-documentation:
+    name: Deploy Documentation
+    if: github.event_name == 'push' && github.ref_name == 'main'
+    needs: [ruff_check, mypy_check, python-tests, build-documentation]
+    runs-on: ubuntu-latest
+    concurrency:
+      group: github-pages
       cancel-in-progress: false
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
   release:
     name: Update Changelog
     runs-on: ubuntu-latest
