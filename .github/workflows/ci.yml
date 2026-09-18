@@ -113,6 +113,7 @@ jobs:
         shell: bash -el {0}
         run: pytest --cov=nrgise --cov-fail-under=80 --cov-report=term --cov-report=json:coverage.json
 
+      cancel-in-progress: false
   release:
     name: Update Changelog
     runs-on: ubuntu-latest
