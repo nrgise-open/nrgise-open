@@ -1,5 +1,5 @@
 
-*NRGISE Open* is licensed under [CC BY-NC-SA 4.0](link to licence file on github)
+*NRGISE Open* is licensed under [CC BY-NC-SA 4.0]([link to licence file on github](https://github.com/nrgise-open/nrgise-open/blob/main/LICENSE))
 
 Our primary goal in making *NRGISE Open* available is to support academia, research, education, and other non-commercial use. For this reason, *NRGISE Open* is licensed under CC BY-NC-SA.
 

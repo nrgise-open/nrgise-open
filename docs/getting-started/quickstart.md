@@ -29,6 +29,6 @@ results = simulation.run()
 
 # Examples 
 
-To give you an introduction to *NRGISE Open*, we have provided you with some [examples](https://gitlab.cc-asp.fraunhofer.de/iseels/asy/nrgise/-/tree/main/examples?ref_type=heads). Note that the examples are only tested with the latest available version of *NRGISE Open*.
+To give you an introduction to *NRGISE Open*, we have provided you with some [examples](https://github.com/nrgise-open/nrgise-open/tree/main/examples). Note that the examples are only tested with the latest available version of *NRGISE Open*.
 
 

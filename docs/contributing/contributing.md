@@ -11,13 +11,13 @@ First, thanks for contributing 🎉🎉🎉
 Contributions fall into two categories:
 
 1. You propose a new feature or report a bug:
-   - Create an [Issue](Issue) and we discuss the design and implementation. 
+   - Create an [Issue](https://github.com/nrgise-open/nrgise-open/issues) and we discuss the design and implementation. 
       Once it's all agreed, one can go ahead and implement it 
 2. You want to work on an outstanding issue:
-   - Outstanding issues are here: [help wanted](help wanted)
+   - Outstanding issues are labeled [help wanted](https://github.com/nrgise-open/nrgise-open/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22help%20wanted%22)
    - Pick the issue or feature and comment on the task you want to work on. Ask for more information in the issue if needed.
 
-Once you finish implementation, sent a pull request to [link-to-repo](link-to-repo)
+Once you finish implementation, sent a pull request
 
 If you are not familiar with creating a pull request, here are some guides:
 
@@ -103,7 +103,7 @@ All new features and changes must be tested. Please add or update the correspond
 
 # Pull Request (PR)
 
-If all tests and style checks pass, you can create a pull request. Each PR will be reviewed by at least one of the maintainers (@tobirohrer, @ricardasgithubuser, @nilsgithubuser).
+If all tests and style checks pass, you can create a pull request. Each PR will be reviewed by at least one of the maintainers ([tobirohrer](https://github.com/tobirohrer), [RicardaHogl](https://github.com/RicardaHogl), [Nanunanuk](https://github.com/Nanunanuk)).
 
 # Other
 

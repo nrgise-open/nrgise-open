@@ -96,9 +96,9 @@ To give you an introduction to NRGISE, we have provided you with some [examples]
 We welcome contributions from the community. If you have ideas for improvements, feature requests, or encounter a bug, feel free to open an issue or submit a pull request.
 
 1. To discuss with other users, share insights, or to just get in touch with others within the community, you can use our [forum (will be added soon)](forum)
-2. For bugs and feature requests please open an [issue (will be added soon)](issue)
+2. For bugs and feature requests please open an [issue]([issue](https://github.com/nrgise-open/nrgise-open/issues))
    
-Detailed guidelines for contributions can be found in [Contributing](docs/contributing.md).
+Detailed guidelines for contributions can be found in [Contributing](docs/contributing/contributing.md).
 
 ## Team
 
@@ -123,7 +123,7 @@ We don't have a proper "nrgise centric" publication yet. Until then, cite as (Bi
 }
 ```
 
-A list of publications using *NRGISE Open* can be found [here](link)
+A list of publications using *NRGISE Open* can be found [here (will be added soon)](link)
 
 ## License
 
@@ -131,7 +131,7 @@ A list of publications using *NRGISE Open* can be found [here](link)
 
 Our primary goal in making *NRGISE Open* available is to support academia, research, education, and other non-commercial use. For this reason, *NRGISE Open* is licensed under CC BY-NC-SA 4.0.
 
-If you would like to use NRGISE Open for commercial purposes, we offer separate commercial licensing options. Please [get in touch with us][get-in-touch] to discuss the appropriate license for your use case.
+If you would like to use *NRGISE Open* for commercial purposes, we offer separate commercial licensing options. Please [get in touch with us][get-in-touch] to discuss the appropriate license for your use case.
 
 
 
