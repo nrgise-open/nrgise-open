@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nrgise"
-version = "0.6.10"
+version = "0.6.11"
 description = "The Python framework for simulating battery-powered microgrids over time"
 readme = "README.md"
 requires-python = ">=3.9"

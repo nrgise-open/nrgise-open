@@ -6,7 +6,7 @@ Telefon +49 89 1205- 0
 Fax +49 89 1205-7531
 E-Mail: info(at)zv.fraunhofer.de
 
-[www.fraunhofer.de](www.fraunhofer.de)
+[www.fraunhofer.de](https://www.fraunhofer.de)
 
 # Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz
 
