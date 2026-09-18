@@ -38,6 +38,7 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/nrgise-open/nrgise-open"
+Documentation = "https://nrgise-open.github.io/nrgise-open/"
 
 [tool.setuptools]
 packages = ["nrgise"]
