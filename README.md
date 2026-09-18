@@ -131,7 +131,7 @@ A list of publications using *NRGISE Open* can be found [here (will be added soo
 
 Our primary goal in making *NRGISE Open* available is to support academia, research, education, and other non-commercial use. For this reason, *NRGISE Open* is licensed under CC BY-NC-SA 4.0.
 
-If you would like to use NRGISE Open for commercial purposes, we offer separate commercial licensing options. Please [get in touch with us][get-in-touch] to discuss the appropriate license for your use case.
+If you would like to use *NRGISE Open* for commercial purposes, we offer separate commercial licensing options. Please [get in touch with us][get-in-touch] to discuss the appropriate license for your use case.
 
 
 
