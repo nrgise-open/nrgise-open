@@ -1,5 +1,6 @@
 site_name: NRGISE Open Docs
 site_description: Energy system simulation framework documentation
+site_url: https://nrgise-open.github.io/nrgise-open/
 repo_url: https://github.com/nrgise-open/nrgise-open
 
 theme:
@@ -39,7 +40,7 @@ nav:
     - Economics:
       - Core: api/economics/core.md
       - Summary: api/economics/summary.md      
-      - Helper: api/economics/helper.md      
+      - Helper: api/economics/tools.md
       - C&I Bill Calculator: api/economics/c-i-bill-calculator.md      
     - Forecasting: api/forecasting.md
     - Tools: api/tools.md

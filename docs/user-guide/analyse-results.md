@@ -44,7 +44,7 @@ operation. To do so, there are two common options:
     the investment horizon of interest.
 
     For this workflow, use the economics helper
-    [`stretch_data_over_investment_horizon(...)`](../api/economics/helper.md/#nrgise.economics.helper.stretch_data_over_investment_horizon)
+    [`stretch_data_over_investment_horizon(...)`](../api/economics/tools.md/#nrgise.economics.tools.stretch_data_over_investment_horizon)
     to stretch the parts of the results that are relevant for your economic calculations.
 
 In most cases, cash flow must be calculated for the energy system.

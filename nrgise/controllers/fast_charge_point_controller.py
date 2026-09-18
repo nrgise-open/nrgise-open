@@ -15,7 +15,7 @@ class FastChargePointController(ControllerABC):
     Args:
         charge_point_label: Used to wire charge point and its connected
             stationary storage together
-        storage_label: Used to wire charge point and its connected stationary
+        stationary_storage_label: Used to wire charge point and its connected stationary
             storage together
         fast_charge_soc_limit: If the batteries soc is greater than
             ``fast_charge_soc_limit`` fast charging can be done.
@@ -25,7 +25,7 @@ class FastChargePointController(ControllerABC):
         slow_charge_power: Amount of power used to slow charge from the grid
             connection point. Usually the power which can be provided by the
             grid.
-        battery_charging_power: How much power to use to charge the battery if
+        stationary_storage_charging_power: How much power to use to charge the battery if
             no car is connected to the charge point.
     """
 
