@@ -1,6 +1,7 @@
 <img src="docs/imgs/logo.png" alt="isolated" width="900"/>
 
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
+[![Documentation](https://img.shields.io/badge/docs-online-blue.svg)](https://nrgise-open.github.io/nrgise-open/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 ![Python Versions](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue?logo=python&logoColor=FFD43B)
 
@@ -41,7 +42,7 @@ conda install conda-forge/label/cf202003::ipopt -y --override-channels -c conda-
 
 ## Documentation
 
-Documentation can be found [here (will be added soon)](), and includes:
+Documentation can be found [here](https://nrgise-open.github.io/nrgise-open/), and includes:
 - User guides, including how to extend NRGISE for your use cases
 - API documentation
 
@@ -96,7 +97,7 @@ To give you an introduction to NRGISE, we have provided you with some [examples]
 We welcome contributions from the community. If you have ideas for improvements, feature requests, or encounter a bug, feel free to open an issue or submit a pull request.
 
 1. To discuss with other users, share insights, or to just get in touch with others within the community, you can use our [forum (will be added soon)](forum)
-2. For bugs and feature requests please open an [issue]([issue](https://github.com/nrgise-open/nrgise-open/issues))
+2. For bugs and feature requests please open an [issue](https://github.com/nrgise-open/nrgise-open/issues)
    
 Detailed guidelines for contributions can be found in [Contributing](docs/contributing/contributing.md).
 
@@ -123,7 +124,7 @@ We don't have a proper "nrgise centric" publication yet. Until then, cite as (Bi
 }
 ```
 
-A list of publications using *NRGISE Open* can be found [here (will be added soon)](link)
+A list of publications using *NRGISE Open* can be found [here](https://nrgise-open.github.io/nrgise-open/reference/citing/)
 
 ## License
 
