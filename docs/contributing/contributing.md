@@ -105,6 +105,8 @@ All new features and changes must be tested. Please add or update the correspond
 
 If all tests and style checks pass, you can create a pull request. Each PR will be reviewed by at least one of the maintainers ([tobirohrer](https://github.com/tobirohrer), [RicardaHogl](https://github.com/RicardaHogl), [Nanunanuk](https://github.com/Nanunanuk)).
 
+**DISCLAIMER:** Included in out checks is also a version checker. This ensures that each modification is documented in a different version of NRGISE. As it stands, this needs to be updated manually in `pyproject.toml` by increasing the patch version by 1 (for example 1.0.0 -> 1.0.1). Not doing so will result in the pipeline failing.
+
 # Other
 
 Note: This contribution guide was inspired by the one from [Stable-Baselines3](https://github.com/DLR-RM/stable-baselines3/blob/master/CONTRIBUTING.md).
