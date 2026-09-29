@@ -6,6 +6,7 @@ from nrgise.components.capabilities import (
     TimeStepAwareMixin,
 )
 from nrgise.components.charge_point import ChargePoint
+from nrgise.components.charge_schedule import ChargeEvent, ChargeSchedule
 from nrgise.components.component_abc import ComponentABC
 from nrgise.components.grid_builder import Generator, Grid, GridBuilderABC
 from nrgise.components.load import Load
@@ -16,7 +17,9 @@ from nrgise.components.storage import AgingLinearCapacityWrapper, Battery, Stora
 __all__ = [
     "AgingLinearCapacityWrapper",
     "Battery",
+    "ChargeEvent",
     "ChargePoint",
+    "ChargeSchedule",
     "ComponentABC",
     "ContributesToPowerBalanceMixin",
     "ControllableMixin",

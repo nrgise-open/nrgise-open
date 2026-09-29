@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 import pytest
 
@@ -9,6 +8,8 @@ from nrgise import (
 from nrgise.components import Battery, ChargePoint, Generator, Grid, Load, Pv
 from nrgise.controllers import SelfConsumptionController
 from tests.helpers import (
+    build_charge_event,
+    build_charge_schedule,
     build_dummy_data,
     build_energy_system_with_battery,
     build_energy_system_with_charge_point,
@@ -119,9 +120,7 @@ def test_simulate_one_time_step_returns_not_done_while_profile_not_done():
 
 
 def test_time_in_sync_between_components():
-    charge_event_data = pd.DataFrame({'capacity': [np.nan, 10, np.nan, np.nan],
-                                      'soc_arrival': [np.nan, 0.1, np.nan, np.nan]})
-    es = build_energy_system_with_charge_point(charge_event_data)
+    es = build_energy_system_with_charge_point(build_charge_schedule(build_charge_event(1, 2)), profile_length=4)
     es.reset()
     _, next_state, _ = es.simulate_one_time_step({'battery': 0, 'cp': 0})
     assert next_state is not None
@@ -131,9 +130,7 @@ def test_time_in_sync_between_components():
 
 
 def test_time_in_sync_in_initial_state():
-    charge_event_data = pd.DataFrame({'capacity': [10, np.nan, np.nan, np.nan],
-                                      'soc_arrival': [0.1, np.nan, np.nan, np.nan]})
-    es = build_energy_system_with_charge_point(charge_event_data)
+    es = build_energy_system_with_charge_point(build_charge_schedule(build_charge_event(0, 1)), profile_length=4)
     initial_state = es.reset()
     assert initial_state.uncontrolled_power_contribution_per_component['load'] == 0
     assert initial_state.uncontrolled_power_contribution_per_component['pv'] == 0
@@ -184,12 +181,12 @@ def test_result_len_equals_profile_len():
                          [(pd.Timestamp("1/2/2012 23:00:00"), 48),
                           (pd.Timestamp("1/2/2012 11:00:00"), 36)])
 def test_stretch_time_in_es(end_timestamp, simulation_length):
-    es = EnergySystem(pd.date_range("1/1/2012 0:00:00", periods=24, freq="h"))
-    charge_point_event_data = pd.DataFrame({'capacity': range(24), 'soc_arrival': range(24)})
+    time_index = pd.date_range("1/1/2012 0:00:00", periods=24, freq="h")
+    es = EnergySystem(time_index)
     cp = ChargePoint(label='cp',
                      ev_charge_power_limit=-100,
-                     charge_event_data=charge_point_event_data,
-                     time_delta_seconds=900)
+                     charge_schedule=build_charge_schedule(build_charge_event(0, 24)),
+                     time_index=time_index)
     es.add_components(Load(label='load', power_profile=range(24)),
                        Pv(label='pv', power_profile=range(24)),
                       cp)

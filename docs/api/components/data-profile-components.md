@@ -17,3 +17,11 @@
 ----------------------
 
 ::: nrgise.components.ChargePoint
+
+----------------------
+
+::: nrgise.components.ChargeSchedule
+
+----------------------
+
+::: nrgise.components.ChargeEvent
