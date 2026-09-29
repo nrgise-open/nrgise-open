@@ -17,6 +17,8 @@ from nrgise.controllers import (
 from nrgise.forecasters import DataProfileForecaster, ForecastReplayForecaster
 from nrgise.simulator.simulation import SimulationStepResult
 from tests.helpers import (
+    build_charge_event,
+    build_charge_schedule,
     build_dummy_data,
     build_energy_system_with_battery,
     build_energy_system_with_charge_point,
@@ -111,9 +113,8 @@ def test_results_with_multiple_controllables_contains_info_for_all_controllables
 
 
 def test_energy_system_with_charge_point_no_ev():
-    charge_event_data = pd.DataFrame({'capacity': [np.nan, np.nan, np.nan, np.nan],
-                                      'soc_arrival': [np.nan, np.nan, np.nan, np.nan]})
-    es = build_energy_system_with_charge_point(charge_event_data,
+    es = build_energy_system_with_charge_point(build_charge_schedule(),
+                                               profile_length=4,
                                                load_profile=[0, 0, 0, 0],
                                                pv_profile=[0, 0, 0, 0],
                                                storage_soc=0)
@@ -129,9 +130,9 @@ def test_energy_system_with_charge_point_no_ev():
 
 
 def test_energy_system_with_charge_point_ev_fast_charge():
-    charge_event_data = pd.DataFrame({'capacity': [1000, 1000, 1000, 1000],
-                                      'soc_arrival': [0, 0, 0, 0]})
-    es = build_energy_system_with_charge_point(charge_event_data,
+    charge_schedule = build_charge_schedule(build_charge_event(0, 4, capacity=1000, soc_arrival=0))
+    es = build_energy_system_with_charge_point(charge_schedule,
+                                               profile_length=4,
                                                load_profile=[0, 0, 0, 0],
                                                pv_profile=[0, 0, 0, 0])
     controller = FastChargePointController(
@@ -150,9 +151,9 @@ def test_energy_system_with_charge_point_ev_fast_charge():
 
 
 def test_energy_system_with_charge_point_ev_full():
-    charge_event_data = pd.DataFrame({'capacity': [100, 100],
-                                      'soc_arrival': [0.9, 0.9]})
-    es = build_energy_system_with_charge_point(charge_event_data,
+    charge_schedule = build_charge_schedule(build_charge_event(0, 2, capacity=100, soc_arrival=0.9))
+    es = build_energy_system_with_charge_point(charge_schedule,
+                                               profile_length=2,
                                                load_profile=[0, 0],
                                                pv_profile=[0, 0])
     controller = FastChargePointController(charge_point_label='cp',

@@ -4,7 +4,7 @@ import pandas as pd
 
 from nrgise import EnergySystem
 from nrgise.common.state import State
-from nrgise.components import Battery, ChargePoint, Grid, PowerProfile
+from nrgise.components import Battery, ChargeEvent, ChargePoint, ChargeSchedule, Grid, PowerProfile
 
 
 def build_profile_data(
@@ -75,13 +75,33 @@ def build_energy_system_without_controllables(data: pd.DataFrame) -> EnergySyste
     return energy_system
 
 
+def build_charge_event(
+        start_step: int,
+        end_step: int,
+        capacity: float = 10,
+        soc_arrival: float = 0.1,
+) -> ChargeEvent:
+    """Build a charge event from hourly time step `start_step` until (exclusive) `end_step`, matching the time index of
+    `build_profile_data`."""
+    start = pd.Timestamp('2012-01-01')
+    return ChargeEvent(arrival=start + pd.Timedelta(hours=start_step), departure=start + pd.Timedelta(hours=end_step),
+                       capacity=capacity, soc_arrival=soc_arrival)
+
+
+def build_charge_schedule(*charge_events: ChargeEvent) -> ChargeSchedule:
+    charge_schedule = ChargeSchedule()
+    for charge_event in charge_events:
+        charge_schedule.add_charge_event(charge_event)
+    return charge_schedule
+
+
 def build_energy_system_with_charge_point(
-        charge_event_data: pd.DataFrame,
+        charge_schedule: ChargeSchedule,
+        profile_length: int,
         load_profile: Optional[Sequence[float]] = None,
         pv_profile: Optional[Sequence[float]] = None,
         storage_soc: float = 1,
 ) -> EnergySystem:
-    profile_length = len(charge_event_data)
     if load_profile is None:
         load_profile = [-float(time_step) for time_step in range(profile_length)]
     if pv_profile is None:
@@ -90,8 +110,8 @@ def build_energy_system_with_charge_point(
     energy_system = build_energy_system_with_battery(data, initial_soc=storage_soc)
     charge_point = ChargePoint(
         label='cp',
-        charge_event_data=charge_event_data,
-        time_delta_seconds=energy_system.time_delta_seconds,
+        charge_schedule=charge_schedule,
+        time_index=pd.DatetimeIndex(data.index),
     )
     energy_system.add_components(charge_point)
     return energy_system

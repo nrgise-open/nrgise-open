@@ -2,21 +2,20 @@ import os
 from typing import Tuple
 
 import pandas as pd
-from charge_event_dict_to_profile import charge_event_dict_to_pandas_profile
 
 import nrgise
-from nrgise.components import Battery, ChargePoint, Grid
+from nrgise.components import Battery, ChargeEvent, ChargePoint, ChargeSchedule, Grid
 from nrgise.controllers import FastChargePointController
 
 
-def build_energy_system(date_time_index: pd.DatetimeIndex, profile: pd.DataFrame):
+def build_energy_system(date_time_index: pd.DatetimeIndex, charge_schedule: ChargeSchedule):
     es = nrgise.EnergySystem(time_index=date_time_index)
     grid = Grid(label='Grid')
     charge_point1 = ChargePoint(
         label='charge_point1',
         ev_charge_power_limit=-50,
-        charge_event_data=profile,
-        time_delta_seconds=15 * 60,
+        charge_schedule=charge_schedule,
+        time_index=date_time_index,
     )
     battery = Battery(
         label='battery',
@@ -28,20 +27,25 @@ def build_energy_system(date_time_index: pd.DatetimeIndex, profile: pd.DataFrame
     return es
 
 
-def create_data() -> Tuple[pd.DatetimeIndex, pd.DataFrame]:
+def create_data() -> Tuple[pd.DatetimeIndex, ChargeSchedule]:
     dir_path = os.path.dirname(os.path.realpath(__file__))
     csv_file_path = os.path.join(dir_path, 'data_charge_events.csv')
     charge_event_df = pd.read_csv(csv_file_path, sep=';')
-    charge_event_dict = charge_event_df.to_dict('list')
+    arrivals = pd.to_datetime(charge_event_df['time_stamp'], format='%d.%m.%Y %H:%M')
+    departures = arrivals + pd.to_timedelta(charge_event_df['parking_time_minutes'], unit='min')
+    charge_schedule = ChargeSchedule()
+    for arrival, departure, capacity, soc_arrival in zip(
+            arrivals, departures, charge_event_df['capacity'], charge_event_df['soc_arrival']):
+        charge_schedule.add_charge_event(
+            ChargeEvent(arrival=arrival, departure=departure, capacity=capacity, soc_arrival=soc_arrival))
     number_of_time_steps = 7 * 24 * 4
     dti = pd.date_range(start='2021-01-01 00:00', periods=number_of_time_steps, freq='15min')
-    profile = charge_event_dict_to_pandas_profile(charge_event_dict, dti)
-    return dti, profile
+    return dti, charge_schedule
 
 
 if __name__ == '__main__':
-    dti, profile = create_data()
-    es = build_energy_system(dti, profile)
+    dti, charge_schedule = create_data()
+    es = build_energy_system(dti, charge_schedule)
     controller = FastChargePointController(
         charge_point_label='charge_point1',
         stationary_storage_label='battery',
