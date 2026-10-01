@@ -94,6 +94,16 @@ def my_function(arg1: type1, arg2: type2) -> returntype:
 
 All new features and changes must be tested. Please add or update the corresponding tests in `/tests`.
 
+# AI Tool Use Policy
+
+We follow the [LLVM AI Tool Use Policy](https://llvm.org/docs/AIToolPolicy.html).
+
+## Summary
+
+- **Keep the human in the loop**: All generated code must be reviewed and understood by the contributor. Write the PR description yourself.
+- **Be transparent**: Label contributions containing generated code with a note `Assisted-by: <tool>:<model>`, e.g., `Assisted-by: Claude Code:claude-sonnet-4-6`
+- **Ensure quality**: Please ensure that your contributions are worth more to the project than the time required to review them.
+
 # Documentation
 
 - We use `mkdocs` to document our code. 
