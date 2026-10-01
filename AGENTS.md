@@ -18,7 +18,7 @@ Applies when you create or modify domain logic, algorithms, mathematics, statist
 * Explain why the apporach was chosen.
 * State assumptions and limitations.
 * State confidence level: High / Medium / Low.
-* Never invent formulas, thresholds, metrics, or methodology without saying so.
+* Never invent formulas, thresholds, metrics, or methodology.
 * Never present uncertain methodological claims as facts.
 
 Add this comment above methodological logic you create or modify:
