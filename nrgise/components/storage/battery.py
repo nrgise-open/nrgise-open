@@ -84,7 +84,6 @@ class Battery(StorageABC):
         """
         Returns the state of charge.
 
-        
         Returns:
             A dictionary containing the following keys:
 

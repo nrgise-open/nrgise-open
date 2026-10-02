@@ -95,7 +95,7 @@ class AgingLinearCapacityWrapper(StorageWrapperABC):
         """
         Returns state of wrapped battery plus additional aging related properties.
 
-        
+
         Returns:
             A dictionary containing the following keys:
 
