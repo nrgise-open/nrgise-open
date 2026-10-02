@@ -83,6 +83,11 @@ class Battery(StorageABC):
     def get_state(self) -> dict[str, float]:
         """
         Returns the state of charge.
+
+        Returns:
+            A dictionary containing the following keys:
+
+                - ``soc``: Current soc of the battery, in [0,1].
         """
         return {
             'soc': self._soc,
