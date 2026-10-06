@@ -65,6 +65,12 @@ def build_energy_system_with_multiple_empty_batteries(data: pd.DataFrame) -> Ene
     pv = PowerProfile(label='pv', power_profile=data['pv'])
     energy_system.add_components(*batteries, pv, Grid(label='grid'), load)
     return energy_system
+    
+
+def build_empty_energy_system(data: pd.DataFrame) -> EnergySystem:
+    energy_system = EnergySystem(time_index=pd.DatetimeIndex(data.index))
+    energy_system.add_components(Grid(label='grid'))
+    return energy_system
 
 
 def build_energy_system_without_controllables(data: pd.DataFrame) -> EnergySystem:
