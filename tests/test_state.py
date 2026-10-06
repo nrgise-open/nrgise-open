@@ -1,4 +1,3 @@
-# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import pandas as pd
 
 from nrgise.common.state import build_state

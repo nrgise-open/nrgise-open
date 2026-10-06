@@ -1,4 +1,3 @@
-# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from abc import ABC, abstractmethod
 
 from nrgise.components.component_abc import ComponentABC

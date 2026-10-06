@@ -1,4 +1,3 @@
-# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from typing import Optional, Sequence
 
 import pandas as pd

@@ -1,4 +1,3 @@
-# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import time
 
 import numpy as np

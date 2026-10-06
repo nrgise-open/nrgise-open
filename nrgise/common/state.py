@@ -1,4 +1,3 @@
-# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from dataclasses import dataclass
 from typing import Any, Callable, List, Type, TypeVar, Union
 
@@ -63,14 +62,14 @@ def build_state(components: List[ComponentABC],
     uncontrolled_electrical_power_contributions, uncontrolled_electrical_power_balance = (
         _get_uncontrolled_power_contributions(
             components,
-            ContributesToElectricalPowerBalanceMixin,
+            ContributesToElectricalPowerBalanceMixin,  # type: ignore[type-abstract]
             lambda component: component.uncontrolled_electrical_power_contribution(),
         )
     )
     uncontrolled_thermal_power_contributions, uncontrolled_thermal_power_balance = (
         _get_uncontrolled_power_contributions(
             components,
-            ContributesToThermalPowerBalanceMixin,
+            ContributesToThermalPowerBalanceMixin,  # type: ignore[type-abstract]
             lambda component: component.uncontrolled_thermal_power_contribution(),
         )
     )
@@ -90,7 +89,7 @@ def build_state(components: List[ComponentABC],
         components_states=components_state,
     )
 
-
+# Assisted-by: OpenCode:gpt-5.6-sol
 ContributionMixinT = TypeVar(
     'ContributionMixinT',
     ContributesToElectricalPowerBalanceMixin,
