@@ -3,6 +3,9 @@ import pandas as pd
 from nrgise.common.state import build_state
 from nrgise.components import ElectricalPowerProfile
 from nrgise.components.grid_builder.grid import Grid
+from nrgise.components.load import ElectricalLoad, ThermalLoad
+from nrgise.components.power_profile import ThermalPowerProfile
+from nrgise.components.pv.pv import Pv
 from nrgise.energy_system import EnergySystem
 from tests.helpers import build_dummy_data, build_energy_system_with_multiple_empty_batteries
 
@@ -11,13 +14,29 @@ def test_get_power_levels_electricity_only():
     es = EnergySystem(time_index=pd.DatetimeIndex(build_dummy_data()[0:3].index))
     es.add_components(Grid(label='grid'),
                        ElectricalPowerProfile(label='pv_1', power_profile=[1, 1, 1]),
-                       ElectricalPowerProfile(label='pv_2', power_profile=[2, 2, 2]))
+                       Pv(label='pv_2', power_profile=[2, 2, 2]))
     state = es.reset()
 
     assert state.uncontrolled_electrical_power_contribution_per_component == {'pv_1': 1, 'pv_2': 2}
     assert state.uncontrolled_electrical_power_balance == 3
     assert state.uncontrolled_thermal_power_balance == 0
     assert state.uncontrolled_thermal_power_contribution_per_component == {}
+
+def test_get_power_levels_mixed():
+    # Load can be added by concrete Load component or by PowerProfile. Both should add up.
+    es = EnergySystem(time_index=pd.DatetimeIndex(build_dummy_data()[0:3].index))
+    es.add_components(Grid(label='grid'),
+                       ElectricalPowerProfile(label='load', power_profile=[-1, -1, -1]),
+                       ElectricalLoad(label='load_2', power_profile=[-1, -1, -1]),
+                       ThermalPowerProfile(label='heating', power_profile=[-2, -2, -2]),
+                       ThermalLoad(label='heating_2', power_profile=[-2, -2, -2]))
+    state = es.reset()
+
+    assert state.uncontrolled_electrical_power_contribution_per_component == {'load': -1, 'load_2': -1}
+    assert state.uncontrolled_thermal_power_contribution_per_component == {'heating': -2, 'heating_2': -2}
+    assert state.uncontrolled_electrical_power_balance == -2
+    assert state.uncontrolled_thermal_power_balance == -4
+    
 
 
 def test_build_state_contains_components_states():
