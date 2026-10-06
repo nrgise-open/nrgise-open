@@ -10,8 +10,8 @@ from nrgise.components.capabilities import (
 from nrgise.components.charge_point import ChargePoint
 from nrgise.components.component_abc import ComponentABC
 from nrgise.components.grid_builder import Generator, Grid, GridBuilderABC
-from nrgise.components.load import Load
-from nrgise.components.power_profile import PowerProfile
+from nrgise.components.load import ElectricalLoad, ThermalLoad
+from nrgise.components.power_profile import ElectricalPowerProfile, ThermalPowerProfile
 from nrgise.components.pv import Pv, PvCurtailable
 from nrgise.components.storage import AgingLinearCapacityWrapper, Battery, StorageABC, StorageWrapperABC
 
@@ -24,15 +24,17 @@ __all__ = [
     "ContributesToThermalPowerBalanceMixin",
     "ControllableMixin",
     "DataProfileMixin",
+    "ElectricalLoad",
+    "ElectricalPowerProfile",
     "Generator",
     "Grid",
     "GridBuilderABC",
-    "Load",
-    "PowerProfile",
     "PublishesStateMixin",
     "Pv",
     "PvCurtailable",
     "StorageABC",
     "StorageWrapperABC",
+    "ThermalLoad",
+    "ThermalPowerProfile",
     "TimeStepAwareMixin",
 ]

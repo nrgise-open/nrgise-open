@@ -1,10 +1,18 @@
 ## Data Profile Components
 
-::: nrgise.components.PowerProfile
+::: nrgise.components.ElectricalPowerProfile
 
 ----------------------
 
-::: nrgise.components.Load
+::: nrgise.components.ThermalPowerProfile
+
+----------------------
+
+::: nrgise.components.ElectricalLoad
+
+----------------------
+
+::: nrgise.components.ThermalLoad
 
 ----------------------
 

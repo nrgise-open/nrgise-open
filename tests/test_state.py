@@ -1,17 +1,17 @@
 import pandas as pd
 
 from nrgise.common.state import build_state
-from nrgise.components import PowerProfile
+from nrgise.components import ElectricalPowerProfile
 from nrgise.components.grid_builder.grid import Grid
 from nrgise.energy_system import EnergySystem
-from tests.helpers import build_dummy_data, build_empty_energy_system, build_energy_system_with_multiple_empty_batteries
+from tests.helpers import build_dummy_data, build_energy_system_with_multiple_empty_batteries
 
 
 def test_get_power_levels_electricity_only():
     es = EnergySystem(time_index=pd.DatetimeIndex(build_dummy_data()[0:3].index))
-    es.add_components(Grid(label='grid'), 
-                      PowerProfile(label='pv_1', power_profile=[1, 1, 1]), 
-                      PowerProfile(label='pv_2', power_profile=[2, 2, 2]))
+    es.add_components(Grid(label='grid'),
+                       ElectricalPowerProfile(label='pv_1', power_profile=[1, 1, 1]),
+                       ElectricalPowerProfile(label='pv_2', power_profile=[2, 2, 2]))
     state = es.reset()
 
     assert state.uncontrolled_electrical_power_contribution_per_component == {'pv_1': 1, 'pv_2': 2}
@@ -39,7 +39,7 @@ def test_state_empty_energy_system():
     es.add_components(Grid(label='grid'))
     state = es.reset()
 
-    assert state.uncontrolled_electrical_power_balance == 0 
+    assert state.uncontrolled_electrical_power_balance == 0
     assert state.uncontrolled_thermal_power_balance == 0
     assert state.components_states == {}
     assert state.uncontrolled_electrical_power_contribution_per_component == {}

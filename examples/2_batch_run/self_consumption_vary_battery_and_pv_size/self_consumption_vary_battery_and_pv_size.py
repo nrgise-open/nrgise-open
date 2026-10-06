@@ -9,7 +9,7 @@ import plot_ps_be
 import nrgise
 from nrgise import BatchRun, EnergySystem, Simulation
 from nrgise.common import get_time_delta_seconds
-from nrgise.components import Battery, Grid, Load, Pv
+from nrgise.components import Battery, ElectricalLoad, Grid, Pv
 from nrgise.controllers import SelfConsumptionController
 from nrgise.economics.tools import stretch_data_over_investment_horizon
 
@@ -41,7 +41,7 @@ class MyBatchRun(BatchRun):
         super().__init__(parameter_space=parameter_space, result_directory_name=result_directory_name, max_workers=4)
 
     def _create_energy_system(self, parameters) -> EnergySystem:
-        load = Load(label='load', power_profile=self.load_profile)
+        load = ElectricalLoad(label='load', power_profile=self.load_profile)
         grid = Grid(
             label='grid',
         )
@@ -100,7 +100,7 @@ def read_data() -> pd.DataFrame:
 
 def get_baseline_cash_flow(data: pd.DataFrame) -> np.ndarray:
     # Baseline System has only load and grid (no pv and no battery)
-    load = Load(label='load', power_profile=data['load'])
+    load = ElectricalLoad(label='load', power_profile=data['load'])
     grid = Grid(label='grid')
     baseline_energy_system = EnergySystem(time_index=data.index)  # type: ignore[arg-type]
     baseline_energy_system.add_components(load, grid)

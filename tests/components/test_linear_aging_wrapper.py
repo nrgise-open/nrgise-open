@@ -4,7 +4,7 @@ import pytest
 
 from nrgise import EnergySystem, Simulation
 from nrgise.common.constants import SECONDS_PER_YEAR
-from nrgise.components import AgingLinearCapacityWrapper, Battery, Grid, PowerProfile
+from nrgise.components import AgingLinearCapacityWrapper, Battery, ElectricalPowerProfile, Grid
 from nrgise.components.storage.helper import calc_equivalent_cycle
 from nrgise.controllers import SelfConsumptionController
 
@@ -180,8 +180,8 @@ def test_simulation_results_with_wrapped_storage_contains_information():
                                            initial_soc=0)
     aging_storage = AgingLinearCapacityWrapper(storage, lifetime_in_years=100, max_cycles=100, eol=0.7)
     es = EnergySystem(time_index=pd.date_range(start='2021-01-01 00:00', periods=10, freq='1h'))
-    load = PowerProfile(label='load', power_profile=[-1 for _ in range(10)])
-    pv = PowerProfile(label='pv', power_profile=[2 for _ in range(10)])
+    load = ElectricalPowerProfile(label='load', power_profile=[-1 for _ in range(10)])
+    pv = ElectricalPowerProfile(label='pv', power_profile=[2 for _ in range(10)])
     grid = Grid(label='grid')
     es.add_components(aging_storage, load, pv, grid)
     controller = SelfConsumptionController(storage_label='storage')

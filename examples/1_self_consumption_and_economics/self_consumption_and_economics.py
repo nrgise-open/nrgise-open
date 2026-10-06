@@ -5,7 +5,7 @@ import pandas as pd
 import plot_sc
 
 from nrgise import EnergySystem, Simulation, economics
-from nrgise.components import AgingLinearCapacityWrapper, Battery, Grid, Load, Pv
+from nrgise.components import AgingLinearCapacityWrapper, Battery, ElectricalLoad, Grid, Pv
 from nrgise.controllers import SelfConsumptionController
 
 PV_PEAK_POWER = 400
@@ -27,7 +27,7 @@ def create_energy_system(data: pd.DataFrame) -> EnergySystem:
     es = EnergySystem(time_index=data.index)  # type: ignore[arg-type]
     grid = Grid(label='grid')
     # Note that the load is defined by negative power values.
-    load = Load(label='load', power_profile=data['load'])
+    load = ElectricalLoad(label='load', power_profile=data['load'])
     pv_system = Pv(label='pv', power_profile=data['generation'])
     battery = Battery(
         label='battery',

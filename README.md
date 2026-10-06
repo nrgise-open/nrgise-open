@@ -52,13 +52,13 @@ Basically, running a simulation with NRGISE is as easy as:
 
 ```python
 from nrgise import EnergySystem, Simulation
-from nrgise.components import AgingLinearCapacityWrapper, Battery, Grid, Load, Pv
+from nrgise.components import AgingLinearCapacityWrapper, Battery, ElectricalLoad, Grid, Pv
 from nrgise.controllers import SelfConsumptionController
 
 # Create an energy system
 es = EnergySystem(time_index=data.index)
 grid = Grid(label='grid')
-load = Load(label='load', power_profile=load_profile)
+load = ElectricalLoad(label='load', power_profile=load_profile)
 pv = Pv(label='pv', power_profile=generation_profile)
 battery = Battery(
     label='battery',

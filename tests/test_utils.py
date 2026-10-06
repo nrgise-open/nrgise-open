@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from nrgise import EnergySystem, Simulation
-from nrgise.components import Grid, Load, Pv
+from nrgise.components import ElectricalLoad, Grid, Pv
 from nrgise.tools import get_component_electrical_powers_from_results, stretch_data_profile
 
 
@@ -22,7 +22,7 @@ def test_stretch_data_profile(end_timestamp, simulation_length):
 
 def test_get_component_powers_from_results():
     es = EnergySystem(pd.date_range("1/1/2012 0:00:00", periods=5, freq="15min"))
-    load = Load(label='Load', power_profile=[-1, -2, -3, -4, -5])
+    load = ElectricalLoad(label='Load', power_profile=[-1, -2, -3, -4, -5])
     pv = Pv(label='Pv', power_profile=[5, 5, 5, 5, 5])
     grid = Grid(label='Grid')
     es.add_components(load, pv, grid)

@@ -1,7 +1,7 @@
 import warnings
 
 from nrgise.common.types import UnivariateSequence
-from nrgise.components.power_profile import PowerProfile
+from nrgise.components.power_profile import ElectricalPowerProfile
 
 
 def check_pv_profile(power_profile: UnivariateSequence) -> None:
@@ -10,7 +10,7 @@ def check_pv_profile(power_profile: UnivariateSequence) -> None:
                        f'Usually, a PV system produces power. Therefore, the power profile should be positive')
         warnings.warn(warning_msg)
 
-class Pv(PowerProfile):
+class Pv(ElectricalPowerProfile):
     """
     A more concrete implementation of `PowerProfileComponent` which represents a PV system (values per time step in kW).
 

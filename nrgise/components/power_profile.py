@@ -6,11 +6,15 @@ from nrgise.common.types import GenericSequence, UnivariateSequence
 from nrgise.components.capabilities.contributes_to_electrical_power_balance_mixin import (
     ContributesToElectricalPowerBalanceMixin,
 )
+from nrgise.components.capabilities.contributes_to_thermal_power_balance_mixin import (
+    ContributesToThermalPowerBalanceMixin,
+)
 from nrgise.components.capabilities.data_profile_mixin import DataProfileMixin
 from nrgise.components.capabilities.time_step_aware_mixin import TimeStepAwareMixin
 
 
-class PowerProfile(DataProfileMixin, ContributesToElectricalPowerBalanceMixin, TimeStepAwareMixin):
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
+class _PowerProfile(DataProfileMixin, TimeStepAwareMixin):
     """
     Represents component that cannot be controlled and its power values (kW)
     are predefined by a power profile (for example a fixed solar generation or
@@ -38,7 +42,8 @@ class PowerProfile(DataProfileMixin, ContributesToElectricalPowerBalanceMixin, T
     def handle_time_step_update(self, time_step: int) -> None:
         self._time_step = time_step
 
-    def uncontrolled_electrical_power_contribution(self) -> float:
+    @property
+    def _current_power_value(self) -> float:
         return float(self._power_profile[self._time_step])
 
     @property
@@ -52,3 +57,17 @@ class PowerProfile(DataProfileMixin, ContributesToElectricalPowerBalanceMixin, T
     @property
     def label(self) -> str:
         return self._label
+
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
+class ElectricalPowerProfile(_PowerProfile, ContributesToElectricalPowerBalanceMixin):
+    """An uncontrolled electrical power profile in kW."""
+
+    def uncontrolled_electrical_power_contribution(self) -> float:
+        return self._current_power_value
+
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
+class ThermalPowerProfile(_PowerProfile, ContributesToThermalPowerBalanceMixin):
+    """An uncontrolled thermal power profile in kW_th."""
+
+    def uncontrolled_thermal_power_contribution(self) -> float:
+        return self._current_power_value

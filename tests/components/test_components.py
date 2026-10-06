@@ -5,16 +5,16 @@ import pandas as pd
 import pytest
 
 from nrgise.components import (
+    ElectricalLoad,
+    ElectricalPowerProfile,
     Generator,
     Grid,
-    Load,
-    PowerProfile,
     Pv,
     PvCurtailable,
 )
 
 
-@pytest.mark.parametrize("component_class", [Pv, PowerProfile, Load])
+@pytest.mark.parametrize("component_class", [Pv, ElectricalPowerProfile, ElectricalLoad])
 @pytest.mark.parametrize("power_profile, expected",
                          [
                              ([1, 2, 3], [1, 2, 3]),
@@ -30,7 +30,7 @@ def test_power_profile_component_returns_power_values(component_class, power_pro
             assert power_contribution == expected[time_step]
 
 
-@pytest.mark.parametrize("component_class", [Pv, PowerProfile, Load])
+@pytest.mark.parametrize("component_class", [Pv, ElectricalPowerProfile, ElectricalLoad])
 def test_power_profile_component_reset(component_class):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -47,7 +47,7 @@ def test_pv_system_warns_when_negative_power_contribution():
 
 def test_load_warns_when_positive_power_contribution():
     with warnings.catch_warnings(record=True) as w:
-        Load(label='', power_profile=[1, 10])
+        ElectricalLoad(label='', power_profile=[1, 10])
         assert len(w) == 1
 
 
@@ -90,5 +90,5 @@ def test_power_profile_component_fails_when_passing_data_frame():
     datetime_index = pd.date_range(start='2019-01-01 00:00:00', end='2019-01-31 23:45:00', freq='15min')
     data_profile = pd.DataFrame(index=datetime_index, data={'load': 11})
     with pytest.raises(Exception) as exception_info:
-        PowerProfile(label='data', power_profile=data_profile)  # type: ignore
+        ElectricalPowerProfile(label='data', power_profile=data_profile)  # type: ignore
     assert exception_info.errisinstance(TypeError)

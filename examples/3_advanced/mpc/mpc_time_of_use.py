@@ -2,7 +2,7 @@ import pandas as pd
 from common import plot_tou, read_and_preprocess_data
 
 from nrgise import EnergySystem, Simulation
-from nrgise.components import Battery, Grid, Load
+from nrgise.components import Battery, ElectricalLoad, Grid
 from nrgise.controllers import TimeOfUseMPCController
 from nrgise.forecasters import DataProfileForecaster
 
@@ -15,7 +15,7 @@ STORAGE_POWER = 50
 def create_energy_system() -> EnergySystem:
     es = EnergySystem(time_index=time_index)  # type: ignore[arg-type]
     grid = Grid(label='grid')
-    load = Load(label='load', power_profile=load_profile)
+    load = ElectricalLoad(label='load', power_profile=load_profile)
     battery = Battery(
         label='battery',
         time_delta_seconds=es.time_delta_seconds,
