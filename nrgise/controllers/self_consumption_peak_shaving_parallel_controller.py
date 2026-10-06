@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from typing import Any, Dict, Tuple
 
 from nrgise.common.state import State
@@ -84,8 +85,14 @@ class SelfConsumptionPeakShavingParallelController(ControllerABC):
         # 2. Update State with the power fed into the grid from the virtual self consumption storage
         # Reminder: Negative self_consumption_power means charging aka. "loosing/consuming" power !!!
         virtual_state = State(
-            uncontrolled_power_balance=state.uncontrolled_power_balance + self_consumption_power_applied,
-            uncontrolled_power_contribution_per_component=None,  # type: ignore
+            uncontrolled_electrical_power_balance=(
+                state.uncontrolled_electrical_power_balance + self_consumption_power_applied
+            ),
+            uncontrolled_electrical_power_contribution_per_component={},
+            uncontrolled_thermal_power_balance=state.uncontrolled_thermal_power_balance,
+            uncontrolled_thermal_power_contribution_per_component=(
+                state.uncontrolled_thermal_power_contribution_per_component
+            ),
             time_step=None,  # type: ignore
             components_states=None,  # type: ignore
             date_time=state.date_time,

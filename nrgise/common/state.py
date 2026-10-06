@@ -1,9 +1,15 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from dataclasses import dataclass
-from typing import Any, List, Union
+from typing import Any, Callable, List, Type, TypeVar, Union
 
 import pandas as pd
 
-from nrgise.components.capabilities.contributes_to_power_balance_mixin import ContributesToPowerBalanceMixin
+from nrgise.components.capabilities.contributes_to_electrical_power_balance_mixin import (
+    ContributesToElectricalPowerBalanceMixin,
+)
+from nrgise.components.capabilities.contributes_to_thermal_power_balance_mixin import (
+    ContributesToThermalPowerBalanceMixin,
+)
 from nrgise.components.capabilities.publishes_state_mixin import PublishesStateMixin
 from nrgise.components.component_abc import ComponentABC
 
@@ -23,17 +29,17 @@ class State:
     - Information about the time step and datetime of the state.
     - Information about the state of all components of the EnergySystem which implement `PublishesStateMixin`
         interface. The state of the components is published by their implementation of `get_state()`.
-    - Information about the uncontrolled power contribution of a component. An uncontrolled power contribution happens
-        no matter how the system is controlled. For example by a load or a pv
-        component. Components implementing `ContributesToPowerBalanceMixin` provide
-        this information.
+    - Information about the uncontrolled electrical and thermal power contributions of components. These contributions
+        happen independently of system control and are kept in separate balances.
     """
 
     time_step: int
-    uncontrolled_power_balance: float
-    uncontrolled_power_contribution_per_component: dict[str, float]
-    components_states: dict
     date_time: pd.Timestamp
+    uncontrolled_electrical_power_balance: float
+    uncontrolled_electrical_power_contribution_per_component: dict[str, float]
+    uncontrolled_thermal_power_balance: float
+    uncontrolled_thermal_power_contribution_per_component: dict[str, float]
+    components_states: dict
 
     def __getitem__(self, item: str) -> Any:
         try:
@@ -54,7 +60,20 @@ def build_state(components: List[ComponentABC],
         date_time = pd.Timestamp.now()
     date_time = pd.Timestamp(date_time)
 
-    uncontrolled_power_contribution_per_component, uncontrolled_power_balance = _get_uncontrolled_power_contributions(components)
+    uncontrolled_electrical_power_contributions, uncontrolled_electrical_power_balance = (
+        _get_uncontrolled_power_contributions(
+            components,
+            ContributesToElectricalPowerBalanceMixin,
+            lambda component: component.uncontrolled_electrical_power_contribution(),
+        )
+    )
+    uncontrolled_thermal_power_contributions, uncontrolled_thermal_power_balance = (
+        _get_uncontrolled_power_contributions(
+            components,
+            ContributesToThermalPowerBalanceMixin,
+            lambda component: component.uncontrolled_thermal_power_contribution(),
+        )
+    )
 
     # Making the inclusion optional for performance reasons
     components_state = {}
@@ -64,25 +83,34 @@ def build_state(components: List[ComponentABC],
     return State(
         time_step=time_step,
         date_time=date_time,
-        uncontrolled_power_balance=uncontrolled_power_balance,
-        uncontrolled_power_contribution_per_component=uncontrolled_power_contribution_per_component,
+        uncontrolled_electrical_power_balance=uncontrolled_electrical_power_balance,
+        uncontrolled_electrical_power_contribution_per_component=uncontrolled_electrical_power_contributions,
+        uncontrolled_thermal_power_balance=uncontrolled_thermal_power_balance,
+        uncontrolled_thermal_power_contribution_per_component=uncontrolled_thermal_power_contributions,
         components_states=components_state,
     )
 
 
-def _get_uncontrolled_power_contributions(components: List[ComponentABC]) -> tuple[dict[str, float], float]:
-    """
-    Calculates each component's uncontrolled power contribution and the resulting uncontrolled power balance during the
-    defined `time_step`.
-    """
-    uncontrolled_power_contribution_per_component: dict[str, float] = {}
-    uncontrolled_power_balance = 0.0
+ContributionMixinT = TypeVar(
+    'ContributionMixinT',
+    ContributesToElectricalPowerBalanceMixin,
+    ContributesToThermalPowerBalanceMixin,
+)
+
+
+def _get_uncontrolled_power_contributions(
+        components: List[ComponentABC],
+        contribution_mixin: Type[ContributionMixinT],
+        get_contribution: Callable[[ContributionMixinT], float],
+        ) -> tuple[dict[str, float], float]:
+    contributions_per_component: dict[str, float] = {}
+    power_balance = 0.0
     for component in components:
-        if isinstance(component, ContributesToPowerBalanceMixin):
-            components_power_contribution = component.uncontrolled_power_contribution()
-            uncontrolled_power_contribution_per_component[component.label] = components_power_contribution
-            uncontrolled_power_balance += components_power_contribution
-    return uncontrolled_power_contribution_per_component, uncontrolled_power_balance
+        if isinstance(component, contribution_mixin):
+            component_power_contribution = get_contribution(component)
+            contributions_per_component[component.label] = component_power_contribution
+            power_balance += component_power_contribution
+    return contributions_per_component, power_balance
 
 
 def _get_components_state(components: List[ComponentABC]) -> dict:

@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import pytest
 
 from nrgise.components import Battery
@@ -37,7 +38,7 @@ def test_parallel_controller_storage_always_large_enough(
         storage_label='battery',
     )
 
-    state = build_test_state(uncontrolled_power_balance=residual_power_level)
+    state = build_test_state(uncontrolled_electrical_power_balance=residual_power_level)
 
     action, controller_state = controller.get_action(state)
 

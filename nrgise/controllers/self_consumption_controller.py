@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from typing import Any, Dict, Tuple
 
 from nrgise.common.state import State
@@ -20,5 +21,5 @@ class SelfConsumptionController(ControllerABC):
 
     def get_action(self, state: State) -> Tuple[Dict[str, float], Any]:
         controller_state = None
-        control_action = -1 * state.uncontrolled_power_balance
+        control_action = -1 * state.uncontrolled_electrical_power_balance
         return {self._storage_label: control_action}, controller_state

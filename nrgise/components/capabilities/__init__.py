@@ -1,11 +1,18 @@
-from nrgise.components.capabilities.contributes_to_power_balance_mixin import ContributesToPowerBalanceMixin
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
+from nrgise.components.capabilities.contributes_to_electrical_power_balance_mixin import (
+    ContributesToElectricalPowerBalanceMixin,
+)
+from nrgise.components.capabilities.contributes_to_thermal_power_balance_mixin import (
+    ContributesToThermalPowerBalanceMixin,
+)
 from nrgise.components.capabilities.controllable_mixin import ControllableMixin
 from nrgise.components.capabilities.data_profile_mixin import DataProfileMixin
 from nrgise.components.capabilities.publishes_state_mixin import PublishesStateMixin
 from nrgise.components.capabilities.time_step_aware_mixin import TimeStepAwareMixin
 
 __all__ = [
-    "ContributesToPowerBalanceMixin",
+    "ContributesToElectricalPowerBalanceMixin",
+    "ContributesToThermalPowerBalanceMixin",
     "ControllableMixin",
     "DataProfileMixin",
     "PublishesStateMixin",

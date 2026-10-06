@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from typing import Any, Dict, Iterable, Optional, Tuple
 
 import numpy as np
@@ -58,7 +59,7 @@ class SelfConsumptionPeakShavingSequentialController(ControllerABC):
         if self._forecasted_power_exceeds_cutoff_value(residual_generation_forecast,
                                                        self._peak_shaving_controller._cut_off_power_value):
             self._active_controller = self._peak_shaving_controller
-        elif state.uncontrolled_power_balance < self._peak_shaving_controller._cut_off_power_value:
+        elif state.uncontrolled_electrical_power_balance < self._peak_shaving_controller._cut_off_power_value:
             # Handle Case if peak is present now !
             self._active_controller = self._peak_shaving_controller
         else:

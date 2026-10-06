@@ -1,5 +1,7 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from nrgise.components.capabilities import (
-    ContributesToPowerBalanceMixin,
+    ContributesToElectricalPowerBalanceMixin,
+    ContributesToThermalPowerBalanceMixin,
     ControllableMixin,
     DataProfileMixin,
     PublishesStateMixin,
@@ -18,7 +20,8 @@ __all__ = [
     "Battery",
     "ChargePoint",
     "ComponentABC",
-    "ContributesToPowerBalanceMixin",
+    "ContributesToElectricalPowerBalanceMixin",
+    "ContributesToThermalPowerBalanceMixin",
     "ControllableMixin",
     "DataProfileMixin",
     "Generator",

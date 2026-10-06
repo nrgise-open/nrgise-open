@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from typing import List
 
 import numpy as np
@@ -37,10 +38,19 @@ def test_flatten_dict():
 
 
 def test_flatten_keeps_type_of_list():
-    simulation_step_result = SimulationStepResult(time_step=0, date_time=pd.Timestamp.now(), uncontrolled_power_balance=0,
-                                                  uncontrolled_power_contribution_per_component={}, components_states={},
-                                                  grid_builder_usage=0, power_applied=0, power_requested=0,
-                                                  additional_control_info={'pv_forecast': [0, 1, 2, 3]})
+    simulation_step_result = SimulationStepResult(
+        time_step=0,
+        date_time=pd.Timestamp.now(),
+        uncontrolled_electrical_power_balance=0,
+        uncontrolled_electrical_power_contribution_per_component={},
+        uncontrolled_thermal_power_balance=0,
+        uncontrolled_thermal_power_contribution_per_component={},
+        components_states={},
+        grid_builder_usage=0,
+        power_applied=0,
+        power_requested=0,
+        additional_control_info={'pv_forecast': [0, 1, 2, 3]},
+    )
     flat_simulation_step_results = flatten_dict(vars(simulation_step_result))
     assert isinstance(flat_simulation_step_results['additional_control_info.pv_forecast'], List)
 

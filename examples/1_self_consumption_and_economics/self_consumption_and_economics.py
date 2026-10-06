@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import os
 
 import pandas as pd
@@ -74,7 +75,9 @@ if __name__ == '__main__':
     # We need a baseline to compare our investment against.
     # We take the same "energy system", but without any pv or battery (meaning only the load).
     baseline_grid_power_utilization_investment_horizon = economics.stretch_data_over_investment_horizon(
-        data=results['uncontrolled_power_contribution_per_component.load'] * (-1), investment_horizon_years=10)
+        data=results['uncontrolled_electrical_power_contribution_per_component.load'] * (-1),
+        investment_horizon_years=10,
+    )
     baseline_cash_flow = economics.calculate_cash_flow_per_year_based_on_simplified_electricity_bill(
         energy_price=0.20,
         power_price=100,

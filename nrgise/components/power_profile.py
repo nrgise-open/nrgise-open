@@ -1,13 +1,16 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import numpy as np
 import pandas as pd
 
 from nrgise.common.types import GenericSequence, UnivariateSequence
-from nrgise.components.capabilities.contributes_to_power_balance_mixin import ContributesToPowerBalanceMixin
+from nrgise.components.capabilities.contributes_to_electrical_power_balance_mixin import (
+    ContributesToElectricalPowerBalanceMixin,
+)
 from nrgise.components.capabilities.data_profile_mixin import DataProfileMixin
 from nrgise.components.capabilities.time_step_aware_mixin import TimeStepAwareMixin
 
 
-class PowerProfile(DataProfileMixin, ContributesToPowerBalanceMixin, TimeStepAwareMixin):
+class PowerProfile(DataProfileMixin, ContributesToElectricalPowerBalanceMixin, TimeStepAwareMixin):
     """
     Represents component that cannot be controlled and its power values (kW)
     are predefined by a power profile (for example a fixed solar generation or
@@ -35,7 +38,7 @@ class PowerProfile(DataProfileMixin, ContributesToPowerBalanceMixin, TimeStepAwa
     def handle_time_step_update(self, time_step: int) -> None:
         self._time_step = time_step
 
-    def uncontrolled_power_contribution(self) -> float:
+    def uncontrolled_electrical_power_contribution(self) -> float:
         return float(self._power_profile[self._time_step])
 
     @property

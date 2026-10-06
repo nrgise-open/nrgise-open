@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import warnings
 
 import numpy as np
@@ -26,7 +27,7 @@ def test_power_profile_component_returns_power_values(component_class, power_pro
         component = component_class(label='', power_profile=power_profile)
         for time_step in range(len(power_profile)):
             component.handle_time_step_update(time_step)
-            power_contribution = component.uncontrolled_power_contribution()
+            power_contribution = component.uncontrolled_electrical_power_contribution()
             assert power_contribution == expected[time_step]
 
 
@@ -36,7 +37,7 @@ def test_power_profile_component_reset(component_class):
         warnings.simplefilter("ignore")
         power_profile_component = component_class(label='', power_profile=[1, 2, 3])
         power_profile_component.reset()
-        assert power_profile_component.uncontrolled_power_contribution() == 1
+        assert power_profile_component.uncontrolled_electrical_power_contribution() == 1
 
 
 def test_pv_system_warns_when_negative_power_contribution():

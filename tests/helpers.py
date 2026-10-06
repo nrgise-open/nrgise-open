@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from typing import Optional, Sequence
 
 import pandas as pd
@@ -98,15 +99,19 @@ def build_energy_system_with_charge_point(
 
 
 def build_test_state(
-        uncontrolled_power_balance: float = 0,
+        uncontrolled_electrical_power_balance: float = 0,
         time_step: int = 0,
         components_states: Optional[dict] = None,
-        uncontrolled_power_contribution_per_component: Optional[dict[str, float]] = None,
+        uncontrolled_electrical_power_contribution_per_component: Optional[dict[str, float]] = None,
 ) -> State:
     return State(
         time_step=time_step,
-        uncontrolled_power_balance=uncontrolled_power_balance,
-        uncontrolled_power_contribution_per_component=uncontrolled_power_contribution_per_component or {},
+        uncontrolled_electrical_power_balance=uncontrolled_electrical_power_balance,
+        uncontrolled_electrical_power_contribution_per_component=(
+            uncontrolled_electrical_power_contribution_per_component or {}
+        ),
+        uncontrolled_thermal_power_balance=0,
+        uncontrolled_thermal_power_contribution_per_component={},
         components_states=components_states or {},
         date_time=pd.Timestamp('2024-01-01'),
     )

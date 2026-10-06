@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import pandas as pd
 
 from nrgise.common.state import build_state
@@ -9,8 +10,8 @@ def test_get_power_levels():
     pv_system_1 = PowerProfile(label='pv_1', power_profile=[1, 1, 1])
     pv_system_2 = PowerProfile(label='pv_2', power_profile=[2, 2, 2])
     state = build_state([pv_system_1, pv_system_2], time_step=0)
-    assert state.uncontrolled_power_contribution_per_component == {'pv_1': 1, 'pv_2': 2}
-    assert state.uncontrolled_power_balance == 3
+    assert state.uncontrolled_electrical_power_contribution_per_component == {'pv_1': 1, 'pv_2': 2}
+    assert state.uncontrolled_electrical_power_balance == 3
 
 
 def test_build_state_contains_components_states():

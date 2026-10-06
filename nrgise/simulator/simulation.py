@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Optional, Union
 
@@ -17,8 +18,10 @@ class SimulationStepResult:
     """
     time_step: int
     date_time: pd.Timestamp
-    uncontrolled_power_balance: float
-    uncontrolled_power_contribution_per_component: Dict[str, float]
+    uncontrolled_electrical_power_balance: float
+    uncontrolled_electrical_power_contribution_per_component: Dict[str, float]
+    uncontrolled_thermal_power_balance: float
+    uncontrolled_thermal_power_contribution_per_component: Dict[str, float]
     components_states: Dict
     grid_builder_usage: float
     power_requested: Union[float, Dict[str, float]]
@@ -82,10 +85,12 @@ class Simulation:
             power_applied_to_controllables, next_state, done = self._energy_system.simulate_one_time_step(
                 power_requested)
 
-            power_balance = state.uncontrolled_power_balance + sum(power_applied_to_controllables.values())
-            power_required_from_grid_builder = -1 * power_balance
-            power_taken_from_grid_builder = grid_builder.supply_power(power_required_from_grid_builder)
-            if power_taken_from_grid_builder != power_required_from_grid_builder:
+            electrical_power_balance = (
+                state.uncontrolled_electrical_power_balance + sum(power_applied_to_controllables.values())
+            )
+            electrical_power_required_from_grid_builder = -1 * electrical_power_balance
+            power_taken_from_grid_builder = grid_builder.supply_power(electrical_power_required_from_grid_builder)
+            if power_taken_from_grid_builder != electrical_power_required_from_grid_builder:
                 raise ValueError('Power could not be balanced by the grid builder.')
             single_simulation_step_result = self._build_single_simulation_step_result(
                 state,
@@ -159,8 +164,14 @@ class Simulation:
             # Includes State information
             time_step=state.time_step,
             date_time=state.date_time,
-            uncontrolled_power_balance=state.uncontrolled_power_balance,
-            uncontrolled_power_contribution_per_component=state.uncontrolled_power_contribution_per_component,
+            uncontrolled_electrical_power_balance=state.uncontrolled_electrical_power_balance,
+            uncontrolled_electrical_power_contribution_per_component=(
+                state.uncontrolled_electrical_power_contribution_per_component
+            ),
+            uncontrolled_thermal_power_balance=state.uncontrolled_thermal_power_balance,
+            uncontrolled_thermal_power_contribution_per_component=(
+                state.uncontrolled_thermal_power_contribution_per_component
+            ),
             components_states=state.components_states,
             grid_builder_usage=power_taken_from_grid_builder,
             power_requested=result_power_requested,

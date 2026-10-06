@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Tuple
@@ -51,7 +52,7 @@ def stretch_data_profile(data_profile: GenericSequence,
     return replicated_data, target_date_time_index
 
 
-def get_component_powers_from_results(energy_system: EnergySystem, results: pd.DataFrame) -> pd.DataFrame:
+def get_component_electrical_powers_from_results(energy_system: EnergySystem, results: pd.DataFrame) -> pd.DataFrame:
     """
     Convenience function to extract per-component power values from simulation results.
 
@@ -68,7 +69,9 @@ def get_component_powers_from_results(energy_system: EnergySystem, results: pd.D
         if component.label in energy_system.controllable_components:
             component_powers[component.label] = results['power_applied.' + component.label]
         elif component.label not in energy_system.controllable_components and not isinstance(component, GridBuilderABC):
-            component_powers[component.label] = results['uncontrolled_power_contribution_per_component.' + component.label]
+            component_powers[component.label] = (
+                results['uncontrolled_electrical_power_contribution_per_component.' + component.label]
+            )
         elif isinstance(component, GridBuilderABC):
             component_powers[component.label] = results['grid_builder_usage']
     return component_powers

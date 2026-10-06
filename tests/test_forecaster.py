@@ -1,4 +1,4 @@
-
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import numpy as np
 import pandas as pd
 import pytest
@@ -10,8 +10,10 @@ from nrgise.forecasters import DataProfileForecaster, ForecastReplayForecaster
 def _state_with_time_step(time_step: int) -> State:
     return State(
         time_step=time_step,
-        uncontrolled_power_balance=0,
-        uncontrolled_power_contribution_per_component={},
+        uncontrolled_electrical_power_balance=0,
+        uncontrolled_electrical_power_contribution_per_component={},
+        uncontrolled_thermal_power_balance=0,
+        uncontrolled_thermal_power_contribution_per_component={},
         components_states={},
         date_time=pd.Timestamp.now(),
     )
