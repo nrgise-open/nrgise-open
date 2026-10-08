@@ -1,3 +1,5 @@
+from nrgise.common.constants import ELECTRICITY_BUS
+from nrgise.common.types import PowerContribution
 from nrgise.components.storage.storage_abc import StorageABC
 
 
@@ -16,6 +18,7 @@ class Battery(StorageABC):
             When set to 0.95, 5% of the energy is considered lost when
             charging.
         efficiency_discharge: Defines the efficiency of the storage when discharging.
+        power_bus: Bus to which charging and discharging power is contributed.
     """
 
     def __init__(
@@ -27,6 +30,7 @@ class Battery(StorageABC):
             initial_soc: float = 0,
             efficiency_charge: float = 1,
             efficiency_discharge: float = 1,
+            power_bus: str = ELECTRICITY_BUS,
         ) -> None:
         self._label = label
         self.nom_power = nom_power
@@ -36,8 +40,10 @@ class Battery(StorageABC):
         self._soc = initial_soc
         self._efficiency_charge = efficiency_charge
         self._efficiency_discharge = efficiency_discharge
+        self._power_bus = power_bus
 
-    def set_power_contribution(self, power: float) -> float:
+    # Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
+    def set_power_contribution(self, power: float) -> PowerContribution:
         """
         Tries to apply requested power contribution (kW).
 
@@ -72,7 +78,7 @@ class Battery(StorageABC):
         else:  # Edge Case: applies only if power or capacity are 0
             power = 0
 
-        return power
+        return {self._power_bus: power}
 
     def reset(self) -> None:
         """
@@ -115,6 +121,10 @@ class Battery(StorageABC):
     @property
     def soc(self) -> float:
         return self._soc
+
+    @property
+    def power_bus(self) -> str:
+        return self._power_bus
 
     @property
     def label(self) -> str:

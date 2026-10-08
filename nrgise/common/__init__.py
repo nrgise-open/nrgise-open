@@ -9,12 +9,14 @@ from nrgise.common.helper import (
 from nrgise.common.state import State
 from nrgise.common.types import (
     GenericSequence,
+    PowerContribution,
     UnivariateSequence,
 )
 
 __all__ = [
     "ELECTRICITY_BUS",
     "GenericSequence",
+    "PowerContribution",
     "State",
     "UnivariateSequence",
     "calculate_simulation_length_in_hours",

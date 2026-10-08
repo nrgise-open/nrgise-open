@@ -108,10 +108,10 @@ def test_results_with_multiple_controllables_contains_info_for_all_controllables
     controller = DummyControllerMultipleControllables()
     simulation = Simulation(energy_system, controller)
     results = simulation.run()
-    assert {'power_applied.battery', 'power_requested.battery',
-            'power_applied.battery2', 'power_requested.battery2',
-            'power_applied.battery3', 'power_requested.battery3',
-            'power_applied.battery4', 'power_requested.battery4'}.issubset(results.columns)
+    assert {'power_applied.electricity.battery', 'power_requested.battery',
+            'power_applied.electricity.battery2', 'power_requested.battery2',
+            'power_applied.electricity.battery3', 'power_requested.battery3',
+            'power_applied.electricity.battery4', 'power_requested.battery4'}.issubset(results.columns)
 
 
 def test_energy_system_with_charge_point_no_ev():

@@ -2,6 +2,8 @@ from typing import Any
 
 import numpy as np
 
+from nrgise.common.constants import ELECTRICITY_BUS
+from nrgise.common.types import PowerContribution
 from nrgise.components.capabilities.controllable_mixin import ControllableMixin
 from nrgise.components.capabilities.data_profile_mixin import DataProfileMixin
 from nrgise.components.capabilities.publishes_state_mixin import PublishesStateMixin
@@ -25,15 +27,18 @@ class PvCurtailable(DataProfileMixin, ControllableMixin, PublishesStateMixin, Ti
         power_profile: Maximum available PV generation (kW) per time step.
             Note that the values are positive as they represent power supplied
             to the energy system.
+        power_bus: Bus to which generated power is contributed.
     """
     def __init__(
             self,
             label: str,
             power_profile: np.ndarray,
+            power_bus: str = ELECTRICITY_BUS,
         ) -> None:
         self._label = label
         self._data_profile = np.array(power_profile)
         self._time_step = 0
+        self._power_bus = power_bus
         check_pv_profile(power_profile)
 
     def reset(self) -> None:
@@ -53,10 +58,11 @@ class PvCurtailable(DataProfileMixin, ControllableMixin, PublishesStateMixin, Ti
         """
         return {'generation': self._data_profile[self._time_step]}
 
-    def set_power_contribution(self, power: float) -> float:
+    def set_power_contribution(self, power: float) -> PowerContribution:
         max_power_generation = float(self._data_profile[self._time_step])
         # Variable production is limited to power of profile, but must be positive
-        return max(0.0, min(max_power_generation, power))
+        applied_power = max(0.0, min(max_power_generation, power))
+        return {self._power_bus: applied_power}
 
     @property
     def data_profile(self) -> np.ndarray:

@@ -33,3 +33,7 @@ class StorageWrapperABC(StorageABC, ABC):
     @property
     def time_delta_seconds(self) -> int:
         return self.storage.time_delta_seconds
+
+    @property
+    def power_bus(self) -> str:
+        return self.storage.power_bus

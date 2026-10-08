@@ -72,9 +72,9 @@ def test_grid_capacity_limits():
 
 def test_controllable_pv_component():
     pv = PvCurtailable(label='pv', power_profile=np.array([100, 100, 100]))
-    assert pv.set_power_contribution(200) == 100
-    assert pv.set_power_contribution(-100) == 0
-    assert pv.set_power_contribution(50) == 50
+    assert pv.set_power_contribution(200)[ELECTRICITY_BUS] == 100
+    assert pv.set_power_contribution(-100)[ELECTRICITY_BUS] == 0
+    assert pv.set_power_contribution(50)[ELECTRICITY_BUS] == 50
 
 
 def test_wrong_grid_generator_supply_feed_polarity():

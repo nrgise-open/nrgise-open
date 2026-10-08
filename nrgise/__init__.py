@@ -4,6 +4,7 @@ from nrgise import components, controllers, economics, forecasters
 # Utilities
 from nrgise.common import (
     ELECTRICITY_BUS,
+    PowerContribution,
     State,
     calculate_simulation_length_in_hours,
     convert_energy_to_power,
@@ -20,6 +21,7 @@ __all__ = [ # noqa: RUF022
     # core
     "EnergySystem",
     "ELECTRICITY_BUS",
+    "PowerContribution",
     "State",
     "Simulation",
     # utils

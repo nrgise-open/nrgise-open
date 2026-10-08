@@ -13,8 +13,8 @@ class ControllerABC(ABC):
     def get_action(self, state: State) -> Tuple[Dict[str, float], Any]:
         """
         Returns the action(s) to be taken by the *Component(s)* implementing `ControllableMixin` in the
-        EnergySystem. An action defines the amount of kW which *Component* implementing `ControllableMixin`
-        should contribute to the energy system in the current time step
+        EnergySystem. An action defines the amount of kW which a *Component* implementing `ControllableMixin`
+        should contribute to the energy system in the current time step. The component determines the affected bus.
         (positive = contributing power to the energysystem;
         negative = taking power).
 

@@ -3,7 +3,7 @@ for collection types, there is an article which describes the dependency between
 https://docs.python.org/3.9/library/collections.abc.html
 """
 
-from typing import Dict, Sequence, TypeVar, Union
+from typing import Sequence, TypeVar, Union
 
 import numpy as np
 import pandas as pd
@@ -14,7 +14,12 @@ UnivariateSequence = Union[pd.Series, Sequence, np.ndarray]
 GenericMath = TypeVar("GenericMath", float, np.ndarray, pd.Series)  # all data that allows e.g. to write x = x / 100
 MathSequence = TypeVar("MathSequence", np.ndarray, pd.Series)
 
-ControlAction = Dict[str, float]
+
+# Signed power contributions of one component. Mapping from bus to the power contribution.
+PowerContribution = dict[str, float]
+
+# Mapping from label of controllable(s) to control action(s).
+ControlAction = dict[str, float]
 
 # Technically a `TimeSeries` must have a `pd.DateTimeIndex` which makes them a time series.
 TimeSeries = TypeVar("TimeSeries", pd.DataFrame, pd.Series)

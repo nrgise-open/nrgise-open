@@ -68,7 +68,13 @@ def get_component_electrical_powers_from_results(energy_system: EnergySystem, re
 
     for component in energy_system.components:
         if component.label in energy_system.controllable_components:
-            component_powers[component.label] = results['power_applied.' + component.label]
+            result_column = (
+                'power_applied.' + ELECTRICITY_BUS + '.' + component.label
+            )
+            if result_column in results:
+                component_powers[component.label] = results[result_column]
+            elif len(energy_system.controllable_components) == 1 and 'power_applied' in results:
+                component_powers[component.label] = results['power_applied']
         elif component.label not in energy_system.controllable_components and not isinstance(component, GridBuilderABC):
             result_column = (
                 'uncontrolled_power_contribution_per_bus_and_component.'

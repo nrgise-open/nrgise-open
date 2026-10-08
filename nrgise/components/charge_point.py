@@ -3,6 +3,8 @@ from typing import Any, Optional
 
 import pandas as pd
 
+from nrgise.common.constants import ELECTRICITY_BUS
+from nrgise.common.types import PowerContribution
 from nrgise.components.capabilities.controllable_mixin import ControllableMixin
 from nrgise.components.capabilities.data_profile_mixin import DataProfileMixin
 from nrgise.components.capabilities.publishes_state_mixin import PublishesStateMixin
@@ -42,6 +44,7 @@ class ChargePoint(DataProfileMixin, ControllableMixin, PublishesStateMixin, Time
         time_delta_seconds: The resolution of the simulation
         ev_charge_power_limit: the charging power limit of the EV. The ev battery is assumed to be an one-hour battery
         ev_discharge_power_limit: the discharging power limit of the EV
+        power_bus: Bus to which charging and discharging power is contributed.
 
 
     """
@@ -50,7 +53,8 @@ class ChargePoint(DataProfileMixin, ControllableMixin, PublishesStateMixin, Time
                  charge_event_data: pd.DataFrame,
                  time_delta_seconds: int,
                  ev_charge_power_limit: float = -50,
-                 ev_discharge_power_limit: float = 50) -> None:
+                 ev_discharge_power_limit: float = 50,
+                 power_bus: str = ELECTRICITY_BUS) -> None:
 
         if ev_charge_power_limit > 0 or ev_discharge_power_limit < 0:
             raise ValueError('Make sure the passed charge limit is negative, and the discharge limit is positive.')
@@ -60,6 +64,7 @@ class ChargePoint(DataProfileMixin, ControllableMixin, PublishesStateMixin, Time
         self._time_delta_seconds = time_delta_seconds
         self._max_charge_power = ev_charge_power_limit
         self._max_discharge_power = ev_discharge_power_limit
+        self._power_bus = power_bus
         self._electric_vehicle: Optional[Battery] = None
         self._time_step = None
 
@@ -110,7 +115,8 @@ class ChargePoint(DataProfileMixin, ControllableMixin, PublishesStateMixin, Time
                 capacity=self.data_profile.iloc[time_step]['capacity'],  # type: ignore
                 nom_power=self.data_profile.iloc[time_step]['capacity'],  # type: ignore
                 initial_soc=self.data_profile.iloc[time_step]['soc_arrival'],  # type: ignore
-                time_delta_seconds=self._time_delta_seconds)
+                time_delta_seconds=self._time_delta_seconds,
+                power_bus=self._power_bus)
         if self._electric_vehicle_needs_to_be_disconnected(time_step):
             self._electric_vehicle = None
 
@@ -123,7 +129,7 @@ class ChargePoint(DataProfileMixin, ControllableMixin, PublishesStateMixin, Time
         self._electric_vehicle = None
         self._time_step = None
 
-    def set_power_contribution(self, power: float) -> float:
+    def set_power_contribution(self, power: float) -> PowerContribution:
         """Set the requested power contribution of the connected EV.
 
         Negative power values represent EV charging, while positive values
@@ -135,14 +141,16 @@ class ChargePoint(DataProfileMixin, ControllableMixin, PublishesStateMixin, Time
             power: Requested power contribution.
 
         Returns:
-            The actual power contribution accepted by the EV battery, or ``0``
-            if no EV is connected.
+            The actual power contribution accepted by the EV battery, or a zero
+            contribution on the configured bus if no EV is connected.
         """
         if self._electric_vehicle_connected():
             charge_power = _enforce_charge_limits(power, self._max_discharge_power, self._max_charge_power)
             # data_profile is always a pd.Dataframe, that is why types are ignored
-            return self._electric_vehicle.set_power_contribution(charge_power)  # type: ignore
-        return 0
+            ev_contribution = self._electric_vehicle.set_power_contribution(charge_power)  # type: ignore
+            applied_power = ev_contribution[self._electric_vehicle.power_bus]  # type: ignore
+            return {self._power_bus: applied_power}
+        return {self._power_bus: 0.0}
 
     def _electric_vehicle_needs_to_be_connected(self, time_step: int) -> bool:
         """Return whether an EV should be connected at the given time step.

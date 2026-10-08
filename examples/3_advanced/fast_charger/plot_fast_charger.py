@@ -116,8 +116,8 @@ def main() -> None:
         ),
         "ev_soc": f"components_states.{args.charge_point}.ev_soc",
         "storage_soc": f"components_states.{args.storage}.soc",
-        "ev_power": f"power_applied.{args.charge_point}",
-        "storage_power": f"power_applied.{args.storage}",
+        "ev_power": f"power_applied.electricity.{args.charge_point}",
+        "storage_power": f"power_applied.electricity.{args.storage}",
         "grid_power": args.grid_column,
     }
 

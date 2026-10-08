@@ -5,6 +5,7 @@ import pandas as pd
 
 from nrgise.common.helper import get_time_delta_seconds
 from nrgise.common.state import State, build_state
+from nrgise.common.types import ControlAction, PowerContribution
 from nrgise.components.capabilities.controllable_mixin import ControllableMixin
 from nrgise.components.capabilities.data_profile_mixin import DataProfileMixin
 from nrgise.components.capabilities.time_step_aware_mixin import TimeStepAwareMixin
@@ -108,7 +109,10 @@ class EnergySystem:
         self._update_time(0)
         return self._get_state()
 
-    def simulate_one_time_step(self, action: dict[str, float]) -> tuple[dict[str, float], Optional[State], bool]:
+    def simulate_one_time_step(
+            self,
+            action: ControlAction,
+    ) -> tuple[dict[str, PowerContribution], Optional[State], bool]:
         """
         This method is used by the `Simulation` and can be considered the core method which performs the simulation of
         the energy system. It executes:
@@ -161,7 +165,7 @@ class EnergySystem:
         self._time_index = target_date_time_index.to_numpy()
 
 
-    def _perform_action(self, action: dict[str, float]) -> dict[str, float]:
+    def _perform_action(self, action: dict[str, float]) -> dict[str, PowerContribution]:
         """
         Forwards the actions to be done to the controllables which perform the action (most likely
         storages). This causes a change in the EnergySystem (or at least in the controllable_components which received
@@ -175,7 +179,7 @@ class EnergySystem:
         if len(action) != len(self._controllable_components):
             raise ValueError('Actions and Controllable Components must be of the same length. One action per '
                              'controllable component.')
-        power_contributions = {}
+        power_contributions: dict[str, PowerContribution] = {}
         for controllable_label, controllable_action in action.items():
             component = self._controllable_components[controllable_label]
             controllable = cast(ControllableMixin, component)

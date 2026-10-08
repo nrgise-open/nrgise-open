@@ -3,10 +3,11 @@ import pandas as pd
 import pytest
 
 from nrgise import (
+    ELECTRICITY_BUS,
     EnergySystem,
     Simulation,
 )
-from nrgise.components import Battery, ChargePoint, Load, Generator, Grid, Pv
+from nrgise.components import Battery, ChargePoint, Generator, Grid, Load, Pv
 from nrgise.controllers import SelfConsumptionController
 from tests.helpers import (
     build_dummy_data,
@@ -50,7 +51,10 @@ def test_perform_action_returns_dict(action, energy_system_builder):
     energy_system = energy_system_builder(build_dummy_data())
     energy_system.reset()
     power_contribution_per_controllable, _, _ = energy_system.simulate_one_time_step(action)
-    assert power_contribution_per_controllable == action
+    assert power_contribution_per_controllable == {
+        label: {ELECTRICITY_BUS: power}
+        for label, power in action.items()
+    }
 
 
 @pytest.mark.parametrize(

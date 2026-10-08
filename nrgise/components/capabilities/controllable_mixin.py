@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from nrgise.common.types import PowerContribution
 from nrgise.components.component_abc import ComponentABC
 
 
@@ -14,7 +15,7 @@ class ControllableMixin(ComponentABC, ABC):
     """
 
     @abstractmethod
-    def set_power_contribution(self, power: float) -> float:
+    def set_power_contribution(self, power: float) -> PowerContribution:
         """
         Apply the requested power contribution (kW) for the current time step.
 
@@ -25,16 +26,15 @@ class ControllableMixin(ComponentABC, ABC):
         and update its internal state accordingly. For example, a battery should
         update its state of charge based on the power actually charged or discharged.
 
-        The method returns the power that was actually applied, which may differ
-        from the requested value due to constraints such as state of charge, power
-        limits, or efficiency losses.
+        The method returns the power that was actually applied per bus, which may
+        differ from the requested value due to constraints such as state of charge,
+        power limits, or efficiency losses. The component, rather than the controller,
+        determines which buses receive the contributions.
 
         Args:
             power: The requested power contribution (kW) requested by the controller.
 
         Returns:
-            The actual power contribution (kW) applied by the component during
-                the time step. This may differ from the requested value if the
-                requested power cannot be realized (e.g., requesting discharge from
-                an empty battery).
+            The actual power contributed per bus by the component during
+                the time step.
         """

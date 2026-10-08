@@ -42,6 +42,7 @@ def test_flatten_keeps_type_of_list():
         date_time=pd.Timestamp.now(),
         uncontrolled_power_balance_per_bus={'electricity': 0},
         uncontrolled_power_contribution_per_bus_and_component={'electricity': {}},
+        power_balance_per_bus={'electricity': 0},
         components_states={},
         grid_builder_usage=0,
         power_applied=0,
