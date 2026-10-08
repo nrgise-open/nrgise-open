@@ -60,11 +60,11 @@ def test_simulation_without_controller():
     results = simulation.run()
     expected_index = data.index.rename('date_time')
     pd.testing.assert_series_equal(
-        results['uncontrolled_electrical_power_balance'],
+        results['uncontrolled_power_balance_per_bus.electricity'],
         pd.Series(
             [-10.0, -10.0, 10.0, 20.0, -10.0],
             index=expected_index,
-            name='uncontrolled_electrical_power_balance',
+            name='uncontrolled_power_balance_per_bus.electricity',
         ),
         check_freq=False,
     )

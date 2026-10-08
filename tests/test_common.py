@@ -40,10 +40,8 @@ def test_flatten_keeps_type_of_list():
     simulation_step_result = SimulationStepResult(
         time_step=0,
         date_time=pd.Timestamp.now(),
-        uncontrolled_electrical_power_balance=0,
-        uncontrolled_electrical_power_contribution_per_component={},
-        uncontrolled_thermal_power_balance=0,
-        uncontrolled_thermal_power_contribution_per_component={},
+        uncontrolled_power_balance_per_bus={'electricity': 0},
+        uncontrolled_power_contribution_per_bus_and_component={'electricity': {}},
         components_states={},
         grid_builder_usage=0,
         power_applied=0,

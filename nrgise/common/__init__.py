@@ -1,3 +1,4 @@
+from nrgise.common.constants import ELECTRICITY_BUS
 from nrgise.common.helper import (
     calculate_simulation_length_in_hours,
     convert_energy_to_power,
@@ -12,6 +13,7 @@ from nrgise.common.types import (
 )
 
 __all__ = [
+    "ELECTRICITY_BUS",
     "GenericSequence",
     "State",
     "UnivariateSequence",

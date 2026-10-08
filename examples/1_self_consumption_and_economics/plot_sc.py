@@ -9,13 +9,13 @@ def plot(result: pd.DataFrame):
     fig, ax = plt.subplots()
     ax.step(
         result.index,
-        result['uncontrolled_electrical_power_contribution_per_component.load'] * -1,
+        result['uncontrolled_power_contribution_per_bus_and_component.electricity.load'] * -1,
         where="post",
         label='Load',
     )
     ax.step(
         result.index,
-        result['uncontrolled_electrical_power_contribution_per_component.pv'],
+        result['uncontrolled_power_contribution_per_bus_and_component.electricity.pv'],
         where="post",
         label='Generation',
     )

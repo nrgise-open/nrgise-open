@@ -3,13 +3,13 @@
 
 ```python
 from nrgise import EnergySystem, Simulation
-from nrgise.components import Battery, ElectricalLoad, Grid, Pv
+from nrgise.components import Battery, Grid, Load, Pv
 from nrgise.controllers import SelfConsumptionController
 
 # Create a energy system and its components
 es = EnergySystem(time_index=data.index)
 grid = Grid(label='grid')
-load = ElectricalLoad(label='load', power_profile=load_profile)
+load = Load(label='load', power_profile=load_profile)
 pv = Pv(label='pv', power_profile=generation_profile)
 battery = Battery(
     label='battery',

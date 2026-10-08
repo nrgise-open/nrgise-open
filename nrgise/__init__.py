@@ -2,7 +2,13 @@
 from nrgise import components, controllers, economics, forecasters
 
 # Utilities
-from nrgise.common import State, calculate_simulation_length_in_hours, convert_energy_to_power, convert_power_to_energy
+from nrgise.common import (
+    ELECTRICITY_BUS,
+    State,
+    calculate_simulation_length_in_hours,
+    convert_energy_to_power,
+    convert_power_to_energy,
+)
 
 # Core Systems
 from nrgise.energy_system import EnergySystem
@@ -13,6 +19,7 @@ __all__ = [ # noqa: RUF022
     "BatchRun",
     # core
     "EnergySystem",
+    "ELECTRICITY_BUS",
     "State",
     "Simulation",
     # utils

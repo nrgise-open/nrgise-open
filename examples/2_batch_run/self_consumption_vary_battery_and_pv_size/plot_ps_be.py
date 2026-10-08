@@ -42,13 +42,13 @@ def investigate_optimal_run(result, results_dir_path: str = 'results'):
     fig, ax = plt.subplots()
     ax.step(
         plot_x_data,
-        plot_data['uncontrolled_electrical_power_contribution_per_component.load'],
+        plot_data['uncontrolled_power_contribution_per_bus_and_component.electricity.load'],
         where="post",
         label='Load',
     )
     ax.step(
         plot_x_data,
-        plot_data['uncontrolled_electrical_power_contribution_per_component.pv'],
+        plot_data['uncontrolled_power_contribution_per_bus_and_component.electricity.pv'],
         where="post",
         label='Generation',
     )

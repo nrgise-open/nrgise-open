@@ -3,8 +3,9 @@ from typing import Optional, Sequence
 import pandas as pd
 
 from nrgise import EnergySystem
+from nrgise.common.constants import ELECTRICITY_BUS
 from nrgise.common.state import State
-from nrgise.components import Battery, ChargePoint, ElectricalPowerProfile, Grid
+from nrgise.components import Battery, ChargePoint, Grid, PowerProfile
 
 
 def build_profile_data(
@@ -43,8 +44,8 @@ def build_energy_system_with_battery(
         time_delta_seconds=energy_system.time_delta_seconds,
         initial_soc=initial_soc,
     )
-    load = ElectricalPowerProfile(label='load', power_profile=data['demand_el'])
-    pv = ElectricalPowerProfile(label='pv', power_profile=data['pv'])
+    load = PowerProfile(label='load', power_profile=data['demand_el'])
+    pv = PowerProfile(label='pv', power_profile=data['pv'])
     energy_system.add_components(battery, pv, Grid(label='grid'), load)
     return energy_system
 
@@ -61,8 +62,8 @@ def build_energy_system_with_multiple_empty_batteries(data: pd.DataFrame) -> Ene
         )
         for label in ('battery', 'battery2', 'battery3', 'battery4')
     ]
-    load = ElectricalPowerProfile(label='load', power_profile=data['demand_el'])
-    pv = ElectricalPowerProfile(label='pv', power_profile=data['pv'])
+    load = PowerProfile(label='load', power_profile=data['demand_el'])
+    pv = PowerProfile(label='pv', power_profile=data['pv'])
     energy_system.add_components(*batteries, pv, Grid(label='grid'), load)
     return energy_system
 
@@ -75,8 +76,8 @@ def build_empty_energy_system(data: pd.DataFrame) -> EnergySystem:
 
 def build_energy_system_without_controllables(data: pd.DataFrame) -> EnergySystem:
     energy_system = EnergySystem(time_index=pd.DatetimeIndex(data.index))
-    load = ElectricalPowerProfile(label='load', power_profile=data['demand_el'])
-    pv = ElectricalPowerProfile(label='pv', power_profile=data['pv'])
+    load = PowerProfile(label='load', power_profile=data['demand_el'])
+    pv = PowerProfile(label='pv', power_profile=data['pv'])
     energy_system.add_components(pv, Grid(label='grid'), load)
     return energy_system
 
@@ -104,19 +105,19 @@ def build_energy_system_with_charge_point(
 
 
 def build_test_state(
-        uncontrolled_electrical_power_balance: float = 0,
+        uncontrolled_power_balance_per_bus: Optional[dict[str, float]] = None,
         time_step: int = 0,
         components_states: Optional[dict] = None,
-        uncontrolled_electrical_power_contribution_per_component: Optional[dict[str, float]] = None,
+        uncontrolled_power_contribution_per_bus_and_component: Optional[dict[str, dict[str, float]]] = None,
 ) -> State:
     return State(
         time_step=time_step,
-        uncontrolled_electrical_power_balance=uncontrolled_electrical_power_balance,
-        uncontrolled_electrical_power_contribution_per_component=(
-            uncontrolled_electrical_power_contribution_per_component or {}
+        uncontrolled_power_balance_per_bus=(
+            uncontrolled_power_balance_per_bus or {ELECTRICITY_BUS: 0.0}
         ),
-        uncontrolled_thermal_power_balance=0,
-        uncontrolled_thermal_power_contribution_per_component={},
+        uncontrolled_power_contribution_per_bus_and_component=(
+            uncontrolled_power_contribution_per_bus_and_component or {ELECTRICITY_BUS: {}}
+        ),
         components_states=components_states or {},
         date_time=pd.Timestamp('2024-01-01'),
     )

@@ -1,0 +1,1 @@
+1. Add tests for Thermal load components (adapt test cases of electricity to also appy for thermal)

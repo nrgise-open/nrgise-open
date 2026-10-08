@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 from nrgise import EnergySystem, Simulation
-from nrgise.components import AgingLinearCapacityWrapper, Battery, ElectricalLoad, Grid
+from nrgise.components import AgingLinearCapacityWrapper, Battery, Load, Grid
 from nrgise.controllers import ProfileFollowerController
 
 
@@ -20,7 +20,7 @@ def build_energy_system(data):
     es = EnergySystem(time_index=data.index)
     grid = Grid(label='grid')
 
-    load = ElectricalLoad(label='load', power_profile=data['load'])
+    load = Load(label='load', power_profile=data['load'])
     battery = Battery(
         label='battery',
         time_delta_seconds=es.time_delta_seconds,

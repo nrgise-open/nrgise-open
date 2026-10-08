@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Tuple
 
 import pandas as pd
 
+from nrgise.common.constants import ELECTRICITY_BUS
 from nrgise.common.helper import duplicate_data, get_time_delta_seconds
 from nrgise.common.types import GenericSequence
 from nrgise.components.grid_builder.grid_builder_abc import GridBuilderABC
@@ -69,9 +70,14 @@ def get_component_electrical_powers_from_results(energy_system: EnergySystem, re
         if component.label in energy_system.controllable_components:
             component_powers[component.label] = results['power_applied.' + component.label]
         elif component.label not in energy_system.controllable_components and not isinstance(component, GridBuilderABC):
-            component_powers[component.label] = (
-                results['uncontrolled_electrical_power_contribution_per_component.' + component.label]
+            result_column = (
+                'uncontrolled_power_contribution_per_bus_and_component.'
+                + ELECTRICITY_BUS
+                + '.'
+                + component.label
             )
+            if result_column in results:
+                component_powers[component.label] = results[result_column]
         elif isinstance(component, GridBuilderABC):
             component_powers[component.label] = results['grid_builder_usage']
     return component_powers

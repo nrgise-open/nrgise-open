@@ -1,20 +1,22 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import warnings
 
 import numpy as np
 import pandas as pd
 import pytest
 
+from nrgise.common.constants import ELECTRICITY_BUS
 from nrgise.components import (
-    ElectricalLoad,
-    ElectricalPowerProfile,
     Generator,
     Grid,
+    Load,
+    PowerProfile,
     Pv,
     PvCurtailable,
 )
 
 
-@pytest.mark.parametrize("component_class", [Pv, ElectricalPowerProfile, ElectricalLoad])
+@pytest.mark.parametrize("component_class", [Pv, PowerProfile, Load])
 @pytest.mark.parametrize("power_profile, expected",
                          [
                              ([1, 2, 3], [1, 2, 3]),
@@ -26,17 +28,17 @@ def test_power_profile_component_returns_power_values(component_class, power_pro
         component = component_class(label='', power_profile=power_profile)
         for time_step in range(len(power_profile)):
             component.handle_time_step_update(time_step)
-            power_contribution = component.uncontrolled_electrical_power_contribution()
+            power_contribution = component.uncontrolled_power_contributions()[ELECTRICITY_BUS]
             assert power_contribution == expected[time_step]
 
 
-@pytest.mark.parametrize("component_class", [Pv, ElectricalPowerProfile, ElectricalLoad])
+@pytest.mark.parametrize("component_class", [Pv, PowerProfile, Load])
 def test_power_profile_component_reset(component_class):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         power_profile_component = component_class(label='', power_profile=[1, 2, 3])
         power_profile_component.reset()
-        assert power_profile_component.uncontrolled_electrical_power_contribution() == 1
+        assert power_profile_component.uncontrolled_power_contributions()[ELECTRICITY_BUS] == 1
 
 
 def test_pv_system_warns_when_negative_power_contribution():
@@ -47,7 +49,7 @@ def test_pv_system_warns_when_negative_power_contribution():
 
 def test_load_warns_when_positive_power_contribution():
     with warnings.catch_warnings(record=True) as w:
-        ElectricalLoad(label='', power_profile=[1, 10])
+        Load(label='', power_profile=[1, 10])
         assert len(w) == 1
 
 
@@ -90,5 +92,5 @@ def test_power_profile_component_fails_when_passing_data_frame():
     datetime_index = pd.date_range(start='2019-01-01 00:00:00', end='2019-01-31 23:45:00', freq='15min')
     data_profile = pd.DataFrame(index=datetime_index, data={'load': 11})
     with pytest.raises(Exception) as exception_info:
-        ElectricalPowerProfile(label='data', power_profile=data_profile)  # type: ignore
+        PowerProfile(label='data', power_profile=data_profile)  # type: ignore
     assert exception_info.errisinstance(TypeError)

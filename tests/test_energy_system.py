@@ -6,7 +6,7 @@ from nrgise import (
     EnergySystem,
     Simulation,
 )
-from nrgise.components import Battery, ChargePoint, ElectricalLoad, Generator, Grid, Pv
+from nrgise.components import Battery, ChargePoint, Load, Generator, Grid, Pv
 from nrgise.controllers import SelfConsumptionController
 from tests.helpers import (
     build_dummy_data,
@@ -125,8 +125,8 @@ def test_time_in_sync_between_components():
     es.reset()
     _, next_state, _ = es.simulate_one_time_step({'battery': 0, 'cp': 0})
     assert next_state is not None
-    assert next_state.uncontrolled_electrical_power_contribution_per_component['load'] == -1
-    assert next_state.uncontrolled_electrical_power_contribution_per_component['pv'] == 1
+    assert next_state.uncontrolled_power_contribution_per_bus_and_component['electricity']['load'] == -1
+    assert next_state.uncontrolled_power_contribution_per_bus_and_component['electricity']['pv'] == 1
     assert next_state.components_states['cp']['ev_connected'] is True
 
 
@@ -135,8 +135,8 @@ def test_time_in_sync_in_initial_state():
                                       'soc_arrival': [0.1, np.nan, np.nan, np.nan]})
     es = build_energy_system_with_charge_point(charge_event_data)
     initial_state = es.reset()
-    assert initial_state.uncontrolled_electrical_power_contribution_per_component['load'] == 0
-    assert initial_state.uncontrolled_electrical_power_contribution_per_component['pv'] == 0
+    assert initial_state.uncontrolled_power_contribution_per_bus_and_component['electricity']['load'] == 0
+    assert initial_state.uncontrolled_power_contribution_per_bus_and_component['electricity']['pv'] == 0
     assert initial_state.components_states['cp']['ev_connected'] is True
 
 
@@ -151,7 +151,7 @@ def test_adding_component_with_duplicated_label_throws():
 
 def test_check_profile_data_length_raises_if_unequal_profiles():
     es = EnergySystem(pd.date_range("1/1/2012", periods=2, freq="h"))
-    es.add_components(ElectricalLoad(label='load', power_profile=range(3)),
+    es.add_components(Load(label='load', power_profile=range(3)),
                       Pv(label='pv', power_profile=range(1)))
     with pytest.raises(Exception) as exception_info:
         es.reset()
@@ -160,7 +160,7 @@ def test_check_profile_data_length_raises_if_unequal_profiles():
 
 def test_check_profile_data_length_passes_if_equal_profiles():
     es = EnergySystem(pd.date_range("1/1/2012", periods=3, freq="h"))
-    es.add_components(ElectricalLoad(label='load', power_profile=range(3)),
+    es.add_components(Load(label='load', power_profile=range(3)),
     Pv(label='pv', power_profile=range(3)))
     es.reset()
 
@@ -168,7 +168,7 @@ def test_check_profile_data_length_passes_if_equal_profiles():
 def test_result_len_equals_profile_len():
     date_range = pd.date_range("1/1/2012", periods=3, freq="h")
     es = EnergySystem(date_range)
-    es.add_components(ElectricalLoad(label='load', power_profile=range(3)),
+    es.add_components(Load(label='load', power_profile=range(3)),
                        Pv(label='pv', power_profile=range(3)),
                       Battery(label='',
                                                    nom_power=10,
@@ -190,7 +190,7 @@ def test_stretch_time_in_es(end_timestamp, simulation_length):
                      ev_charge_power_limit=-100,
                      charge_event_data=charge_point_event_data,
                      time_delta_seconds=900)
-    es.add_components(ElectricalLoad(label='load', power_profile=range(24)),
+    es.add_components(Load(label='load', power_profile=range(24)),
                        Pv(label='pv', power_profile=range(24)),
                       cp)
     es.stretch_time(end_timestamp)

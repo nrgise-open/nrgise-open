@@ -51,14 +51,15 @@ Documentation can be found [here](https://nrgise-open.github.io/nrgise-open/), a
 Basically, running a simulation with NRGISE is as easy as:
 
 ```python
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from nrgise import EnergySystem, Simulation
-from nrgise.components import AgingLinearCapacityWrapper, Battery, ElectricalLoad, Grid, Pv
+from nrgise.components import AgingLinearCapacityWrapper, Battery, Grid, Load, Pv
 from nrgise.controllers import SelfConsumptionController
 
 # Create an energy system
 es = EnergySystem(time_index=data.index)
 grid = Grid(label='grid')
-load = ElectricalLoad(label='load', power_profile=load_profile)
+load = Load(label='load', power_profile=load_profile)
 pv = Pv(label='pv', power_profile=generation_profile)
 battery = Battery(
     label='battery',

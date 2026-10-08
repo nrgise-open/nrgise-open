@@ -31,7 +31,12 @@ def plot_tou(results, price_profile):
     # Use index for consistent x-axis location of the data
     x_vals = results.index
 
-    ax.step(x_vals, results['uncontrolled_electrical_power_balance'] * -1, where='post', label='Residual Load')
+    ax.step(
+        x_vals,
+        results['uncontrolled_power_balance_per_bus.electricity'] * -1,
+        where='post',
+        label='Residual Load',
+    )
     ax.step(x_vals, np.array(price_profile)*1000, '--', where='post', label='Price')
     ax.step(x_vals, results['grid_builder_usage'], where='post', label='Grid Usage')
     ax.step(x_vals, results['power_requested'], where='post', label='Battery Power')

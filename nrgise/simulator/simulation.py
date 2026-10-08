@@ -4,6 +4,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 import pandas as pd
 
+from nrgise.common.constants import ELECTRICITY_BUS
 from nrgise.common.helper import flatten_dict
 from nrgise.common.state import State
 from nrgise.controllers.controller_abc import ControllerABC
@@ -18,10 +19,8 @@ class SimulationStepResult:
     """
     time_step: int
     date_time: pd.Timestamp
-    uncontrolled_electrical_power_balance: float
-    uncontrolled_electrical_power_contribution_per_component: Dict[str, float]
-    uncontrolled_thermal_power_balance: float
-    uncontrolled_thermal_power_contribution_per_component: Dict[str, float]
+    uncontrolled_power_balance_per_bus: Dict[str, float]
+    uncontrolled_power_contribution_per_bus_and_component: Dict[str, Dict[str, float]]
     components_states: Dict
     grid_builder_usage: float
     power_requested: Union[float, Dict[str, float]]
@@ -86,7 +85,8 @@ class Simulation:
                 power_requested)
 
             electrical_power_balance = (
-                state.uncontrolled_electrical_power_balance + sum(power_applied_to_controllables.values())
+                state.uncontrolled_power_balance_per_bus[ELECTRICITY_BUS]
+                + sum(power_applied_to_controllables.values())
             )
             electrical_power_required_from_grid_builder = -1 * electrical_power_balance
             power_taken_from_grid_builder = grid_builder.supply_power(electrical_power_required_from_grid_builder)
@@ -164,13 +164,9 @@ class Simulation:
             # Includes State information
             time_step=state.time_step,
             date_time=state.date_time,
-            uncontrolled_electrical_power_balance=state.uncontrolled_electrical_power_balance,
-            uncontrolled_electrical_power_contribution_per_component=(
-                state.uncontrolled_electrical_power_contribution_per_component
-            ),
-            uncontrolled_thermal_power_balance=state.uncontrolled_thermal_power_balance,
-            uncontrolled_thermal_power_contribution_per_component=(
-                state.uncontrolled_thermal_power_contribution_per_component
+            uncontrolled_power_balance_per_bus=state.uncontrolled_power_balance_per_bus,
+            uncontrolled_power_contribution_per_bus_and_component=(
+                state.uncontrolled_power_contribution_per_bus_and_component
             ),
             components_states=state.components_states,
             grid_builder_usage=power_taken_from_grid_builder,
