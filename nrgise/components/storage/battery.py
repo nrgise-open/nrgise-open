@@ -1,5 +1,6 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from nrgise.common.constants import ELECTRICITY_BUS
-from nrgise.common.types import PowerContribution
+from nrgise.common.types import Bus, PowerContribution
 from nrgise.components.storage.storage_abc import StorageABC
 
 
@@ -30,7 +31,7 @@ class Battery(StorageABC):
             initial_soc: float = 0,
             efficiency_charge: float = 1,
             efficiency_discharge: float = 1,
-            power_bus: str = ELECTRICITY_BUS,
+            power_bus: Bus = ELECTRICITY_BUS,
         ) -> None:
         self._label = label
         self.nom_power = nom_power
@@ -123,7 +124,7 @@ class Battery(StorageABC):
         return self._soc
 
     @property
-    def power_bus(self) -> str:
+    def power_bus(self) -> Bus:
         return self._power_bus
 
     @property

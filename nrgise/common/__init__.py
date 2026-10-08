@@ -8,6 +8,7 @@ from nrgise.common.helper import (
 )
 from nrgise.common.state import State
 from nrgise.common.types import (
+    Bus,
     GenericSequence,
     PowerContribution,
     UnivariateSequence,
@@ -15,6 +16,7 @@ from nrgise.common.types import (
 
 __all__ = [
     "ELECTRICITY_BUS",
+    "Bus",
     "GenericSequence",
     "PowerContribution",
     "State",

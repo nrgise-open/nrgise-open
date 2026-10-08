@@ -1,10 +1,11 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import math
 from typing import Any, Optional
 
 import pandas as pd
 
 from nrgise.common.constants import ELECTRICITY_BUS
-from nrgise.common.types import PowerContribution
+from nrgise.common.types import Bus, PowerContribution
 from nrgise.components.capabilities.controllable_mixin import ControllableMixin
 from nrgise.components.capabilities.data_profile_mixin import DataProfileMixin
 from nrgise.components.capabilities.publishes_state_mixin import PublishesStateMixin
@@ -54,7 +55,7 @@ class ChargePoint(DataProfileMixin, ControllableMixin, PublishesStateMixin, Time
                  time_delta_seconds: int,
                  ev_charge_power_limit: float = -50,
                  ev_discharge_power_limit: float = 50,
-                 power_bus: str = ELECTRICITY_BUS) -> None:
+                 power_bus: Bus = ELECTRICITY_BUS) -> None:
 
         if ev_charge_power_limit > 0 or ev_discharge_power_limit < 0:
             raise ValueError('Make sure the passed charge limit is negative, and the discharge limit is positive.')

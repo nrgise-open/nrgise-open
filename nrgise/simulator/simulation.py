@@ -7,7 +7,7 @@ import pandas as pd
 from nrgise.common.constants import ELECTRICITY_BUS
 from nrgise.common.helper import flatten_dict
 from nrgise.common.state import State
-from nrgise.common.types import ControlAction, PowerContribution
+from nrgise.common.types import Bus, ControlAction, PowerContribution
 from nrgise.controllers.controller_abc import ControllerABC
 from nrgise.energy_system import EnergySystem
 
@@ -21,13 +21,13 @@ class SimulationStepResult:
     """
     time_step: int
     date_time: pd.Timestamp
-    uncontrolled_power_balance_per_bus: Dict[str, float]
-    uncontrolled_power_contribution_per_bus_and_component: Dict[str, Dict[str, float]]
-    power_balance_per_bus: Dict[str, float]
+    uncontrolled_power_balance_per_bus: Dict[Bus, float]
+    uncontrolled_power_contribution_per_component_and_bus: Dict[str, PowerContribution]
+    power_balance_per_bus: Dict[Bus, float]
     components_states: Dict
     grid_builder_usage: float
-    power_requested: Union[float, Dict[str, float]]
-    power_applied: Union[float, Dict[str, Dict[str, float]]]
+    power_requested: Union[float, ControlAction]
+    power_applied: Union[float, Dict[str, PowerContribution]]
     additional_control_info: Any
 
 SimulationHook = Callable[['Simulation', 'SimulationStepResult'], None]
@@ -87,18 +87,19 @@ class Simulation:
             power_applied_to_controllables, next_state, done = self._energy_system.simulate_one_time_step(
                 power_requested)
 
-            power_applied_per_bus_and_component, power_balance_per_bus = (
-                self._aggregate_power_contributions(state, power_applied_to_controllables)
+            power_balance_per_bus = (
+                self._calculate_power_balance_per_bus(state, power_applied_to_controllables)
             )
             electrical_power_balance = power_balance_per_bus[ELECTRICITY_BUS]
             electrical_power_required_from_grid_builder = -1 * electrical_power_balance
             power_taken_from_grid_builder = grid_builder.supply_power(electrical_power_required_from_grid_builder)
             if power_taken_from_grid_builder != electrical_power_required_from_grid_builder:
                 raise ValueError('Power could not be balanced by the grid builder.')
+
             single_simulation_step_result = self._build_single_simulation_step_result(
                 state,
                 power_requested,
-                power_applied_per_bus_and_component,
+                power_applied_to_controllables,
                 power_balance_per_bus,
                 power_taken_from_grid_builder,
                 additional_control_info,
@@ -139,8 +140,8 @@ class Simulation:
     @staticmethod
     def _build_single_simulation_step_result(state: State,
                                               power_requested: ControlAction,
-                                              power_applied: dict[str, dict[str, float]],
-                                              power_balance_per_bus: dict[str, float],
+                                              power_applied: dict[str, PowerContribution],
+                                              power_balance_per_bus: dict[Bus, float],
                                               power_taken_from_grid_builder: float,
                                               additional_control_info: Any) -> SimulationStepResult:
         """
@@ -162,11 +163,12 @@ class Simulation:
             result_power_requested = power_requested
 
         applied_contributions = [
-            power
-            for contributions_per_component in power_applied.values()
-            for power in contributions_per_component.values()
+            contribution
+            for component_contributions in power_applied.values()
+            for contribution in component_contributions.values()
         ]
-        result_power_applied: Union[float, Dict[str, Dict[str, float]]]
+
+        result_power_applied: Union[float, Dict[str, PowerContribution]]
         if len(power_requested) == 1 and len(applied_contributions) == 1:
             result_power_applied = applied_contributions[0]
         elif len(power_requested) == 0 and len(applied_contributions) == 0:
@@ -174,15 +176,22 @@ class Simulation:
         else:
             result_power_applied = power_applied
 
+        # The electricity balance is already represented with the opposite sign by grid_builder_usage.
+        reported_power_balance_per_bus = {
+            bus: power
+            for bus, power in power_balance_per_bus.items()
+            if bus != ELECTRICITY_BUS
+        }
+
         return SimulationStepResult(
             # Includes State information
             time_step=state.time_step,
             date_time=state.date_time,
             uncontrolled_power_balance_per_bus=state.uncontrolled_power_balance_per_bus,
-            uncontrolled_power_contribution_per_bus_and_component=(
-                state.uncontrolled_power_contribution_per_bus_and_component
+            uncontrolled_power_contribution_per_component_and_bus=(
+                state.uncontrolled_power_contribution_per_component_and_bus
             ),
-            power_balance_per_bus=power_balance_per_bus,
+            power_balance_per_bus=reported_power_balance_per_bus,
             components_states=state.components_states,
             grid_builder_usage=power_taken_from_grid_builder,
             power_requested=result_power_requested,
@@ -192,16 +201,14 @@ class Simulation:
 
     # Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
     @staticmethod
-    def _aggregate_power_contributions(
+    def _calculate_power_balance_per_bus(
             state: State,
             power_applied: dict[str, PowerContribution],
-    ) -> tuple[dict[str, dict[str, float]], dict[str, float]]:
-        contributions_per_bus_and_component: dict[str, dict[str, float]] = {}
+    ) -> dict[Bus, float]:
         power_balance_per_bus = dict(state.uncontrolled_power_balance_per_bus)
 
-        for component_label, power_contribution in power_applied.items():
+        for power_contribution in power_applied.values():
             for power_bus, power in power_contribution.items():
-                contributions_per_bus_and_component.setdefault(power_bus, {})[component_label] = power
                 power_balance_per_bus[power_bus] = power_balance_per_bus.get(power_bus, 0.0) + power
 
-        return contributions_per_bus_and_component, power_balance_per_bus
+        return power_balance_per_bus

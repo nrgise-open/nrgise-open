@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import time
 
 import numpy as np
@@ -73,6 +74,7 @@ def test_simulation_without_controller():
         pd.Series([10.0, 10.0, -10.0, -20.0, 10.0], index=expected_index, name='grid_builder_usage'),
         check_freq=False,
     )
+    assert 'power_balance_per_bus.electricity' not in results
     assert (results['power_applied'] == 0).all()
 
 
@@ -108,10 +110,10 @@ def test_results_with_multiple_controllables_contains_info_for_all_controllables
     controller = DummyControllerMultipleControllables()
     simulation = Simulation(energy_system, controller)
     results = simulation.run()
-    assert {'power_applied.electricity.battery', 'power_requested.battery',
-            'power_applied.electricity.battery2', 'power_requested.battery2',
-            'power_applied.electricity.battery3', 'power_requested.battery3',
-            'power_applied.electricity.battery4', 'power_requested.battery4'}.issubset(results.columns)
+    assert {'power_applied.battery.electricity', 'power_requested.battery',
+            'power_applied.battery2.electricity', 'power_requested.battery2',
+            'power_applied.battery3.electricity', 'power_requested.battery3',
+            'power_applied.battery4.electricity', 'power_requested.battery4'}.issubset(results.columns)
 
 
 def test_energy_system_with_charge_point_no_ev():

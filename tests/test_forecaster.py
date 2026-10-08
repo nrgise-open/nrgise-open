@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import numpy as np
 import pandas as pd
 import pytest
@@ -10,7 +11,7 @@ def _state_with_time_step(time_step: int) -> State:
     return State(
         time_step=time_step,
         uncontrolled_power_balance_per_bus={'electricity': 0},
-        uncontrolled_power_contribution_per_bus_and_component={'electricity': {}},
+        uncontrolled_power_contribution_per_component_and_bus={},
         components_states={},
         date_time=pd.Timestamp.now(),
     )

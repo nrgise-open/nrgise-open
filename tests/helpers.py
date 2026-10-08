@@ -108,15 +108,17 @@ def build_test_state(
         uncontrolled_power_balance_per_bus: Optional[dict[str, float]] = None,
         time_step: int = 0,
         components_states: Optional[dict] = None,
-        uncontrolled_power_contribution_per_bus_and_component: Optional[dict[str, dict[str, float]]] = None,
+        uncontrolled_power_contribution_per_component_and_bus: Optional[dict[str, dict[str, float]]] = None,
 ) -> State:
     return State(
         time_step=time_step,
         uncontrolled_power_balance_per_bus=(
             uncontrolled_power_balance_per_bus or {ELECTRICITY_BUS: 0.0}
         ),
-        uncontrolled_power_contribution_per_bus_and_component=(
-            uncontrolled_power_contribution_per_bus_and_component or {ELECTRICITY_BUS: {}}
+        uncontrolled_power_contribution_per_component_and_bus=(
+            uncontrolled_power_contribution_per_component_and_bus
+            if uncontrolled_power_contribution_per_component_and_bus is not None
+            else {}
         ),
         components_states=components_states or {},
         date_time=pd.Timestamp('2024-01-01'),

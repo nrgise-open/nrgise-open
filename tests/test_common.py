@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from typing import List
 
 import numpy as np
@@ -41,7 +42,7 @@ def test_flatten_keeps_type_of_list():
         time_step=0,
         date_time=pd.Timestamp.now(),
         uncontrolled_power_balance_per_bus={'electricity': 0},
-        uncontrolled_power_contribution_per_bus_and_component={'electricity': {}},
+        uncontrolled_power_contribution_per_component_and_bus={},
         power_balance_per_bus={'electricity': 0},
         components_states={},
         grid_builder_usage=0,

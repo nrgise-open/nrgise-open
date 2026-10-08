@@ -15,8 +15,12 @@ GenericMath = TypeVar("GenericMath", float, np.ndarray, pd.Series)  # all data t
 MathSequence = TypeVar("MathSequence", np.ndarray, pd.Series)
 
 
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
+# Semantic type alias for power bus identifiers.
+Bus = str
+
 # Signed power contributions of one component. Mapping from bus to the power contribution.
-PowerContribution = dict[str, float]
+PowerContribution = dict[Bus, float]
 
 # Mapping from label of controllable(s) to control action(s).
 ControlAction = dict[str, float]

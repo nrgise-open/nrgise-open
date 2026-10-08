@@ -4,6 +4,7 @@ from nrgise import components, controllers, economics, forecasters
 # Utilities
 from nrgise.common import (
     ELECTRICITY_BUS,
+    Bus,
     PowerContribution,
     State,
     calculate_simulation_length_in_hours,
@@ -18,6 +19,7 @@ from nrgise.simulator.simulation import Simulation
 
 __all__ = [ # noqa: RUF022
     "BatchRun",
+    "Bus",
     # core
     "EnergySystem",
     "ELECTRICITY_BUS",

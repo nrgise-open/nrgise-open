@@ -1,9 +1,10 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from typing import Any
 
 import numpy as np
 
 from nrgise.common.constants import ELECTRICITY_BUS
-from nrgise.common.types import PowerContribution
+from nrgise.common.types import Bus, PowerContribution
 from nrgise.components.capabilities.controllable_mixin import ControllableMixin
 from nrgise.components.capabilities.data_profile_mixin import DataProfileMixin
 from nrgise.components.capabilities.publishes_state_mixin import PublishesStateMixin
@@ -33,7 +34,7 @@ class PvCurtailable(DataProfileMixin, ControllableMixin, PublishesStateMixin, Ti
             self,
             label: str,
             power_profile: np.ndarray,
-            power_bus: str = ELECTRICITY_BUS,
+            power_bus: Bus = ELECTRICITY_BUS,
         ) -> None:
         self._label = label
         self._data_profile = np.array(power_profile)

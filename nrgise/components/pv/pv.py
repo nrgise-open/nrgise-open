@@ -1,7 +1,8 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import warnings
 
 from nrgise.common.constants import ELECTRICITY_BUS
-from nrgise.common.types import UnivariateSequence
+from nrgise.common.types import Bus, UnivariateSequence
 from nrgise.components.power_profile import PowerProfile
 
 
@@ -23,7 +24,7 @@ class Pv(PowerProfile):
             self,
             label: str,
             power_profile: UnivariateSequence,
-            power_bus: str = ELECTRICITY_BUS
+            power_bus: Bus = ELECTRICITY_BUS,
     ):
         super().__init__(label=label, power_profile=power_profile, power_bus=power_bus)
         check_pv_profile(power_profile)

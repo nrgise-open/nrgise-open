@@ -1,8 +1,9 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import numpy as np
 import pandas as pd
 
 from nrgise.common.constants import ELECTRICITY_BUS
-from nrgise.common.types import GenericSequence, UnivariateSequence
+from nrgise.common.types import Bus, GenericSequence, PowerContribution, UnivariateSequence
 from nrgise.components.capabilities.contributes_to_power_balance_mixin import ContributesToPowerBalanceMixin
 from nrgise.components.capabilities.data_profile_mixin import DataProfileMixin
 from nrgise.components.capabilities.time_step_aware_mixin import TimeStepAwareMixin
@@ -24,7 +25,7 @@ class PowerProfile(DataProfileMixin, ContributesToPowerBalanceMixin, TimeStepAwa
     def __init__(self,
                  label: str,
                  power_profile: UnivariateSequence,
-                 power_bus: str = ELECTRICITY_BUS) -> None:
+                 power_bus: Bus = ELECTRICITY_BUS) -> None:
         if isinstance(power_profile, pd.DataFrame):
             raise TypeError
         self._label = label
@@ -38,7 +39,7 @@ class PowerProfile(DataProfileMixin, ContributesToPowerBalanceMixin, TimeStepAwa
     def handle_time_step_update(self, time_step: int) -> None:
         self._time_step = time_step
 
-    def uncontrolled_power_contributions(self) -> dict[str, float]:
+    def uncontrolled_power_contributions(self) -> PowerContribution:
         return {self._power_bus: float(self._power_profile[self._time_step])}
 
     @property

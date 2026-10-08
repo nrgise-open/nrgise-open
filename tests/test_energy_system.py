@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import numpy as np
 import pandas as pd
 import pytest
@@ -129,8 +130,8 @@ def test_time_in_sync_between_components():
     es.reset()
     _, next_state, _ = es.simulate_one_time_step({'battery': 0, 'cp': 0})
     assert next_state is not None
-    assert next_state.uncontrolled_power_contribution_per_bus_and_component['electricity']['load'] == -1
-    assert next_state.uncontrolled_power_contribution_per_bus_and_component['electricity']['pv'] == 1
+    assert next_state.uncontrolled_power_contribution_per_component_and_bus['load']['electricity'] == -1
+    assert next_state.uncontrolled_power_contribution_per_component_and_bus['pv']['electricity'] == 1
     assert next_state.components_states['cp']['ev_connected'] is True
 
 
@@ -139,8 +140,8 @@ def test_time_in_sync_in_initial_state():
                                       'soc_arrival': [0.1, np.nan, np.nan, np.nan]})
     es = build_energy_system_with_charge_point(charge_event_data)
     initial_state = es.reset()
-    assert initial_state.uncontrolled_power_contribution_per_bus_and_component['electricity']['load'] == 0
-    assert initial_state.uncontrolled_power_contribution_per_bus_and_component['electricity']['pv'] == 0
+    assert initial_state.uncontrolled_power_contribution_per_component_and_bus['load']['electricity'] == 0
+    assert initial_state.uncontrolled_power_contribution_per_component_and_bus['pv']['electricity'] == 0
     assert initial_state.components_states['cp']['ev_connected'] is True
 
 

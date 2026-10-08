@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import pandas as pd
 
 from nrgise.common.constants import ELECTRICITY_BUS
@@ -16,8 +17,9 @@ def test_get_power_levels_electricity_only():
                        Pv(label='pv_2', power_profile=[2, 2, 2]))
     state = es.reset()
 
-    assert state.uncontrolled_power_contribution_per_bus_and_component == {
-        ELECTRICITY_BUS: {'pv_1': 1, 'pv_2': 2},
+    assert state.uncontrolled_power_contribution_per_component_and_bus == {
+        'pv_1': {ELECTRICITY_BUS: 1},
+        'pv_2': {ELECTRICITY_BUS: 2},
     }
     assert state.uncontrolled_power_balance_per_bus == {ELECTRICITY_BUS: 3}
 
@@ -31,14 +33,17 @@ def test_get_power_levels_mixed():
                        PowerProfile(label='heating', power_bus='heat_40c', power_profile=[-2, -2, -2]),
                        Load(label='heating_2', power_bus='heat_40c', power_profile=[-3, -2, -2]),
                        PowerProfile(label='heating_90c', power_bus='heat_90c', power_profile=[-20, -20, -20]),
-                       Load(label='heating_90_c_2', power_bus='heat_90c', power_profile=[-30, -20, -20])
+                       Load(label='heating_90_c_2', power_bus='heat_90c', power_profile=[-30, -20, -20]),
                        )
     state = es.reset()
 
-    assert state.uncontrolled_power_contribution_per_bus_and_component == {
-        ELECTRICITY_BUS: {'load': -1, 'load_2': -2},
-        'heat_40c': {'heating': -2, 'heating_2': -3},
-        'heat_90c': {'heating_90c': -20, 'heating_90_c_2': -30},
+    assert state.uncontrolled_power_contribution_per_component_and_bus == {
+        'load': {ELECTRICITY_BUS: -1},
+        'load_2': {ELECTRICITY_BUS: -2},
+        'heating': {'heat_40c': -2},
+        'heating_2': {'heat_40c': -3},
+        'heating_90c': {'heat_90c': -20},
+        'heating_90_c_2': {'heat_90c': -30},
     }
     assert state.uncontrolled_power_balance_per_bus == {
         ELECTRICITY_BUS: -3,
@@ -69,7 +74,7 @@ def test_state_empty_energy_system():
 
     assert state.uncontrolled_power_balance_per_bus == {'electricity': 0}
     assert state.components_states == {}
-    assert state.uncontrolled_power_contribution_per_bus_and_component == {'electricity': {}}
+    assert state.uncontrolled_power_contribution_per_component_and_bus == {}
 
 
 def test_state_attr_getter():

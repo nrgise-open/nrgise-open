@@ -4,7 +4,7 @@ Conceptually, each simulation step consists of three stages:
 
 1. State Building: A new `State` of the EnergySystem and all its components is built. The `State` contains (1) arbitrary information of components published through `PublishesStateMixin`, (2) uncontrolled power contributions per named bus provided through `ContributesToPowerBalanceMixin` and (3) information about the current date time and time step.
 2. Control: Based on the `State`, the controller computes an action. The action is dispatched by the `EnergySystem` to all `ControllableMixin` components. These return a `PowerContribution` containing the power they were actually able to provide per bus (requested and provided power can differ, e.g. an empty battery cannot provide power).
-3. Results: The simulation combines uncontrolled and applied controllable contributions per bus and records `power_balance_per_bus` before grid balancing. The `GridBuilder` supplies or absorbs the remaining imbalance on the default electricity bus only.
+3. Results: The simulation combines uncontrolled and applied controllable contributions per bus. It records `power_balance_per_bus` before grid balancing for buses that are not balanced by the `GridBuilder`. The default electricity-bus balance is omitted because its opposite is already reported as `grid_builder_usage`.
 
 The diagram below shows the detailed control flow of a single simulation step.
 
@@ -22,5 +22,5 @@ In more detail, the flow is as follows:
 6. The next state `state_t+1` is built. During this step, all components implementing `PublishesStateMixin` and `ContributesToPowerBalanceMixin` are queried for their contribution to the `State`.
 7. `simulate_one_time_step(...)` returns `power_applied`, `state_t+1`, and `done` back to `Simulation`.
 8. Back in `Simulation`, the default electricity bus is balanced via the `GridBuilder`. Other buses are currently reported without automatic balancing.
-9. The results of this simulation step are recorded. This includes the state, requested power, bus-aware applied power, the pre-grid balance of every bus, power supplied by the `GridBuilder`, and any additional information returned by the controller. A single contribution is stored in the scalar `power_applied` column for convenience. Multiple contributions use flattened `power_applied.<bus>.<component>` columns.
+9. The results of this simulation step are recorded. This includes the state, requested power, bus-aware applied power, the pre-grid balance of every bus, power supplied by the `GridBuilder`, and any additional information returned by the controller. Applied and uncontrolled contribution mappings are component-first, with flattened `power_applied.<component>.<bus>` and `uncontrolled_power_contribution_per_component_and_bus.<component>.<bus>` columns. For simplicity, one requested controllable with one applied contribution leaf is stored in the scalar `power_applied` column, while no controllables produces scalar `0.0`. `power_requested` remains component-to-requested-power because controllers do not select buses.
 10. The loop starts again.

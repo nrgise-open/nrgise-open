@@ -4,6 +4,7 @@ from typing import Any, List, Union
 import pandas as pd
 
 from nrgise.common.constants import ELECTRICITY_BUS
+from nrgise.common.types import Bus, PowerContribution
 from nrgise.components.capabilities.contributes_to_power_balance_mixin import ContributesToPowerBalanceMixin
 from nrgise.components.capabilities.publishes_state_mixin import PublishesStateMixin
 from nrgise.components.component_abc import ComponentABC
@@ -30,8 +31,8 @@ class State:
 
     time_step: int
     date_time: pd.Timestamp
-    uncontrolled_power_balance_per_bus: dict[str, float]
-    uncontrolled_power_contribution_per_bus_and_component: dict[str, dict[str, float]]
+    uncontrolled_power_balance_per_bus: dict[Bus, float]
+    uncontrolled_power_contribution_per_component_and_bus: dict[str, PowerContribution]
     components_states: dict
 
     def __getitem__(self, item: str) -> Any:
@@ -62,7 +63,7 @@ def build_state(components: List[ComponentABC],
         time_step=time_step,
         date_time=date_time,
         uncontrolled_power_balance_per_bus=power_balances,
-        uncontrolled_power_contribution_per_bus_and_component=power_contributions,
+        uncontrolled_power_contribution_per_component_and_bus=power_contributions,
         components_states=components_states,
     )
 
@@ -70,16 +71,16 @@ def build_state(components: List[ComponentABC],
 def _get_state_values(
         components: List[ComponentABC],
         include_components_state: bool,
-        ) -> tuple[dict[str, float], dict[str, dict[str, float]], dict]:
-
+        ) -> tuple[dict[Bus, float], dict[str, PowerContribution], dict]:
     power_balances = {ELECTRICITY_BUS: 0.0}
-    power_contributions: dict[str, dict[str, float]] = {ELECTRICITY_BUS: {}}
+    power_contributions: dict[str, PowerContribution] = {}
     components_states = {}
 
     for component in components:
         if isinstance(component, ContributesToPowerBalanceMixin):
-            for power_bus, power_contribution in component.uncontrolled_power_contributions().items():
-                power_contributions.setdefault(power_bus, {})[component.label] = power_contribution
+            component_power_contributions = dict(component.uncontrolled_power_contributions())
+            power_contributions[component.label] = component_power_contributions
+            for power_bus, power_contribution in component_power_contributions.items():
                 power_balances[power_bus] = power_balances.get(power_bus, 0.0) + power_contribution
 
         if include_components_state and isinstance(component, PublishesStateMixin):

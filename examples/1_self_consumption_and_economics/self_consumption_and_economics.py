@@ -5,7 +5,7 @@ import pandas as pd
 import plot_sc
 
 from nrgise import EnergySystem, Simulation, economics
-from nrgise.components import AgingLinearCapacityWrapper, Battery, Load, Grid, Pv
+from nrgise.components import AgingLinearCapacityWrapper, Battery, Grid, Load, Pv
 from nrgise.controllers import SelfConsumptionController
 
 PV_PEAK_POWER = 400
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     # We need a baseline to compare our investment against.
     # We take the same "energy system", but without any pv or battery (meaning only the load).
     baseline_grid_power_utilization_investment_horizon = economics.stretch_data_over_investment_horizon(
-        data=results['uncontrolled_power_contribution_per_bus_and_component.electricity.load'] * (-1),
+        data=results['uncontrolled_power_contribution_per_component_and_bus.load.electricity'] * (-1),
         investment_horizon_years=10,
     )
     baseline_cash_flow = economics.calculate_cash_flow_per_year_based_on_simplified_electricity_bill(

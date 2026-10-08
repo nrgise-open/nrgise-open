@@ -1,6 +1,7 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from abc import ABC, abstractmethod
 
-from nrgise.common.types import PowerContribution
+from nrgise.common.types import Bus, PowerContribution
 from nrgise.components.capabilities.controllable_mixin import ControllableMixin
 from nrgise.components.capabilities.publishes_state_mixin import PublishesStateMixin
 
@@ -36,7 +37,7 @@ class StorageABC(ControllableMixin, PublishesStateMixin, ABC):
 
     @property
     @abstractmethod
-    def power_bus(self) -> str:
+    def power_bus(self) -> Bus:
         pass
 
     @abstractmethod

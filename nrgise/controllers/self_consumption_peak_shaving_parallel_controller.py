@@ -98,8 +98,8 @@ class SelfConsumptionPeakShavingParallelController(ControllerABC):
                     + self_consumption_power_applied
                 ),
             },
-            uncontrolled_power_contribution_per_bus_and_component=(
-                state.uncontrolled_power_contribution_per_bus_and_component
+            uncontrolled_power_contribution_per_component_and_bus=(
+                state.uncontrolled_power_contribution_per_component_and_bus
             ),
             time_step=None,  # type: ignore
             components_states=None,  # type: ignore

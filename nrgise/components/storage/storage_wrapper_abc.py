@@ -1,5 +1,7 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from abc import ABC
 
+from nrgise.common.types import Bus
 from nrgise.components.storage.storage_abc import StorageABC
 
 
@@ -35,5 +37,5 @@ class StorageWrapperABC(StorageABC, ABC):
         return self.storage.time_delta_seconds
 
     @property
-    def power_bus(self) -> str:
+    def power_bus(self) -> Bus:
         return self.storage.power_bus
