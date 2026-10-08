@@ -14,7 +14,9 @@ ELECTRIC_LOAD_COLUMN = (
 HEAT_LOAD_COLUMN = "uncontrolled_power_contribution_per_component_and_bus.heat_load.heat"
 GRID_USAGE_COLUMN = "grid_builder_usage"
 POWER_TO_HEAT_ELECTRICITY_COLUMN = "power_applied.power_to_heat.electricity"
+THERMAL_STORAGE_POWER_COLUMN = "power_applied.thermal_storage.heat"
 HEAT_BALANCE_COLUMN = "power_balance_per_bus.heat"
+THERMAL_STORAGE_SOC_COLUMN = "components_states.thermal_storage.soc"
 
 
 def plot_results(
@@ -25,10 +27,10 @@ def plot_results(
     """Plot electrical and heat power flows from saved simulation results."""
     results = pd.read_csv(results_path, index_col="date_time", parse_dates=["date_time"])
 
-    figure, (electric_axis, heat_axis) = plt.subplots(
-        nrows=2,
+    figure, (electric_axis, heat_axis, storage_axis) = plt.subplots(
+        nrows=3,
         sharex=True,
-        figsize=(10, 7),
+        figsize=(10, 9),
     )
 
     electric_axis.step(
@@ -65,10 +67,27 @@ def plot_results(
         where="post",
         label="Heat balance",
     )
-    heat_axis.set_xlabel("Time")
+    heat_axis.step(
+        results.index,
+        results[THERMAL_STORAGE_POWER_COLUMN],
+        where="post",
+        label="Thermal storage contribution",
+    )
     heat_axis.set_ylabel("Thermal power [kW]")
     heat_axis.grid(True)
     heat_axis.legend()
+
+    storage_axis.step(
+        results.index,
+        results[THERMAL_STORAGE_SOC_COLUMN] * 100,
+        where="post",
+        label="Thermal storage state of charge",
+    )
+    storage_axis.set_xlabel("Time")
+    storage_axis.set_ylabel("State of charge [%]")
+    storage_axis.set_ylim(0, 105)
+    storage_axis.grid(True)
+    storage_axis.legend()
 
     figure.suptitle("Power-to-heat example")
     figure.tight_layout()

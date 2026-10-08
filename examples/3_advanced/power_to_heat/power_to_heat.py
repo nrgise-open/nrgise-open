@@ -6,10 +6,14 @@ from heat_demand_controller import HeatDemandController
 from plot_power_to_heat import plot_results
 
 from nrgise import EnergySystem, Simulation
-from nrgise.components import Grid, Load, PowerToHeat
+from nrgise.components import Grid, Load, PowerToHeat, Battery
 
 HEAT_BUS = "heat"
 COP = 3.0
+POWER_TO_HEAT_LABEL = "power_to_heat"
+THERMAL_STORAGE_LABEL = "thermal_storage"
+THERMAL_STORAGE_CAPACITY = 24.0
+THERMAL_STORAGE_POWER = 2.0
 ELECTRIC_LOAD_PROFILE = [-4.0] * 24
 HEAT_LOAD_PROFILE = [
     -6.0, -5.8, -5.5, -5.2, -5.0, -5.5,
@@ -41,19 +45,28 @@ def create_energy_system() -> EnergySystem:
         power_bus=HEAT_BUS,
     )
     heater = PowerToHeat(
-        label='power_to_heat',
+        label=POWER_TO_HEAT_LABEL,
         cop=COP,
         heat_bus=HEAT_BUS,
     )
+    thermal_storage = Battery(
+        label=THERMAL_STORAGE_LABEL,
+        capacity=THERMAL_STORAGE_CAPACITY,
+        nom_power=THERMAL_STORAGE_POWER,
+        time_delta_seconds=energy_system.time_delta_seconds,
+        power_bus=HEAT_BUS,
+    )
 
-    energy_system.add_components(grid, electric_load, heat_load, heater)
+    energy_system.add_components(grid, electric_load, heat_load, heater, thermal_storage)
     return energy_system
 
 
 def run_example() -> pd.DataFrame:
     energy_system = create_energy_system()
     controller = HeatDemandController(
-        power_to_heat_label='power_to_heat',
+        power_to_heat_label=POWER_TO_HEAT_LABEL,
+        thermal_storage_label=THERMAL_STORAGE_LABEL,
+        thermal_storage_power=THERMAL_STORAGE_POWER,
         cop=COP,
         heat_bus=HEAT_BUS,
     )
