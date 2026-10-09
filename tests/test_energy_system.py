@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 from nrgise import (
+    ELECTRICITY_BUS,
     EnergySystem,
     Simulation,
 )
@@ -50,7 +51,10 @@ def test_perform_action_returns_dict(action, energy_system_builder):
     energy_system = energy_system_builder(build_dummy_data())
     energy_system.reset()
     power_contribution_per_controllable, _, _ = energy_system.simulate_one_time_step(action)
-    assert power_contribution_per_controllable == action
+    assert power_contribution_per_controllable == {
+        label: {ELECTRICITY_BUS: power}
+        for label, power in action.items()
+    }
 
 
 @pytest.mark.parametrize(
@@ -125,8 +129,8 @@ def test_time_in_sync_between_components():
     es.reset()
     _, next_state, _ = es.simulate_one_time_step({'battery': 0, 'cp': 0})
     assert next_state is not None
-    assert next_state.uncontrolled_power_contribution_per_component['load'] == -1
-    assert next_state.uncontrolled_power_contribution_per_component['pv'] == 1
+    assert next_state.uncontrolled_power_contribution_per_component_and_bus['load']['electricity'] == -1
+    assert next_state.uncontrolled_power_contribution_per_component_and_bus['pv']['electricity'] == 1
     assert next_state.components_states['cp']['ev_connected'] is True
 
 
@@ -135,8 +139,8 @@ def test_time_in_sync_in_initial_state():
                                       'soc_arrival': [0.1, np.nan, np.nan, np.nan]})
     es = build_energy_system_with_charge_point(charge_event_data)
     initial_state = es.reset()
-    assert initial_state.uncontrolled_power_contribution_per_component['load'] == 0
-    assert initial_state.uncontrolled_power_contribution_per_component['pv'] == 0
+    assert initial_state.uncontrolled_power_contribution_per_component_and_bus['load']['electricity'] == 0
+    assert initial_state.uncontrolled_power_contribution_per_component_and_bus['pv']['electricity'] == 0
     assert initial_state.components_states['cp']['ev_connected'] is True
 
 

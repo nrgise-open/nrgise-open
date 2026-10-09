@@ -2,7 +2,7 @@ import pandas as pd
 from common import plot_tou, read_and_preprocess_data
 
 from nrgise import EnergySystem, Simulation
-from nrgise.components import Battery, Grid, Load
+from nrgise.components import Battery, Load, Grid
 from nrgise.controllers import TimeOfUseMPCController
 from nrgise.forecasters import DataProfileForecaster
 

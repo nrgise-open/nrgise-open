@@ -1,5 +1,6 @@
 import pytest
 
+from nrgise import ELECTRICITY_BUS
 from nrgise.components import Battery
 
 
@@ -24,7 +25,7 @@ def test_power_does_not_fit_into_storage():
                                            efficiency_charge=eta_charge_rate,
                                            initial_soc=0.9,
     )
-    power = battery.set_power_contribution(-50)
+    power = battery.set_power_contribution(-50)[ELECTRICITY_BUS]
     assert battery.soc == 1
     assert power * eta_charge_rate == pytest.approx(-10, abs=0.001)
 
@@ -38,7 +39,7 @@ def test_battery_almost_empty():
                                            efficiency_discharge=eta_discharge_rate,
                                            initial_soc=0.1,
     )
-    power = battery.set_power_contribution(50)
+    power = battery.set_power_contribution(50)[ELECTRICITY_BUS]
     assert battery.soc == 0
     assert power == pytest.approx(9, abs=1e-12)
 

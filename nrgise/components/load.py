@@ -1,24 +1,32 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import warnings
 
-from nrgise.common.types import UnivariateSequence
+from nrgise.common.constants import ELECTRICITY_BUS
+from nrgise.common.types import Bus, UnivariateSequence
 from nrgise.components.power_profile import PowerProfile
 
 
+def _warn_if_profile_sum_is_positive(power_profile: UnivariateSequence, unit: str) -> None:
+    profile_sum = sum(power_profile)
+    if profile_sum > 0:
+        warning_msg = (f'The sum of the given `power_profile` is {profile_sum} {unit} and therefore positive. '
+                       'Usually, a load consumes power. Therefore, the power profile should be negative')
+        warnings.warn(warning_msg)
+
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 class Load(PowerProfile):
     """
-    A more concrete implementation of `PowerProfileComponent` which represents a load (values per time step in kW).
+    An electrical load whose demand values are negative and expressed in kW.
 
     Args:
-        power_profile: A profile containing the amount of power (kW) produced by the Pv System. These values are usually positive.
+        power_profile: An electrical demand profile in kW. Values are usually negative.
         label: An unique identifier for the component.
     """
     def __init__(
             self,
             label: str,
             power_profile: UnivariateSequence,
+            power_bus: Bus = ELECTRICITY_BUS,
     ):
-        super().__init__(label=label, power_profile=power_profile)
-        if sum(power_profile) > 0:
-            warning_msg = (f'The sum of the given `power_profile` is {sum(power_profile)} and therefore positive. '
-                           f'Usually, a load consumes power. Therefore, the power profile should be negative')
-            warnings.warn(warning_msg)
+        super().__init__(label=label, power_profile=power_profile, power_bus=power_bus)
+        _warn_if_profile_sum_is_positive(power_profile, 'kW')

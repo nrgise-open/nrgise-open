@@ -51,6 +51,7 @@ Documentation can be found [here](https://nrgise-open.github.io/nrgise-open/), a
 Basically, running a simulation with NRGISE is as easy as:
 
 ```python
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from nrgise import EnergySystem, Simulation
 from nrgise.components import AgingLinearCapacityWrapper, Battery, Grid, Load, Pv
 from nrgise.controllers import SelfConsumptionController

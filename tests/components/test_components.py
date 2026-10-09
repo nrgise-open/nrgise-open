@@ -1,9 +1,11 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import warnings
 
 import numpy as np
 import pandas as pd
 import pytest
 
+from nrgise.common.constants import ELECTRICITY_BUS
 from nrgise.components import (
     Generator,
     Grid,
@@ -26,7 +28,7 @@ def test_power_profile_component_returns_power_values(component_class, power_pro
         component = component_class(label='', power_profile=power_profile)
         for time_step in range(len(power_profile)):
             component.handle_time_step_update(time_step)
-            power_contribution = component.uncontrolled_power_contribution()
+            power_contribution = component.uncontrolled_power_contributions()[ELECTRICITY_BUS]
             assert power_contribution == expected[time_step]
 
 
@@ -36,7 +38,7 @@ def test_power_profile_component_reset(component_class):
         warnings.simplefilter("ignore")
         power_profile_component = component_class(label='', power_profile=[1, 2, 3])
         power_profile_component.reset()
-        assert power_profile_component.uncontrolled_power_contribution() == 1
+        assert power_profile_component.uncontrolled_power_contributions()[ELECTRICITY_BUS] == 1
 
 
 def test_pv_system_warns_when_negative_power_contribution():
@@ -70,9 +72,9 @@ def test_grid_capacity_limits():
 
 def test_controllable_pv_component():
     pv = PvCurtailable(label='pv', power_profile=np.array([100, 100, 100]))
-    assert pv.set_power_contribution(200) == 100
-    assert pv.set_power_contribution(-100) == 0
-    assert pv.set_power_contribution(50) == 50
+    assert pv.set_power_contribution(200)[ELECTRICITY_BUS] == 100
+    assert pv.set_power_contribution(-100)[ELECTRICITY_BUS] == 0
+    assert pv.set_power_contribution(50)[ELECTRICITY_BUS] == 50
 
 
 def test_wrong_grid_generator_supply_feed_polarity():

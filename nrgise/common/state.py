@@ -3,6 +3,8 @@ from typing import Any, List, Union
 
 import pandas as pd
 
+from nrgise.common.constants import ELECTRICITY_BUS
+from nrgise.common.types import Bus, PowerContribution
 from nrgise.components.capabilities.contributes_to_power_balance_mixin import ContributesToPowerBalanceMixin
 from nrgise.components.capabilities.publishes_state_mixin import PublishesStateMixin
 from nrgise.components.component_abc import ComponentABC
@@ -23,17 +25,15 @@ class State:
     - Information about the time step and datetime of the state.
     - Information about the state of all components of the EnergySystem which implement `PublishesStateMixin`
         interface. The state of the components is published by their implementation of `get_state()`.
-    - Information about the uncontrolled power contribution of a component. An uncontrolled power contribution happens
-        no matter how the system is controlled. For example by a load or a pv
-        component. Components implementing `ContributesToPowerBalanceMixin` provide
-        this information.
+    - Information about uncontrolled power contributions per bus. These contributions happen independently of system
+        control.
     """
 
     time_step: int
-    uncontrolled_power_balance: float
-    uncontrolled_power_contribution_per_component: dict[str, float]
-    components_states: dict
     date_time: pd.Timestamp
+    uncontrolled_power_balance_per_bus: dict[Bus, float]
+    uncontrolled_power_contribution_per_component_and_bus: dict[str, PowerContribution]
+    components_states: dict
 
     def __getitem__(self, item: str) -> Any:
         try:
@@ -54,40 +54,36 @@ def build_state(components: List[ComponentABC],
         date_time = pd.Timestamp.now()
     date_time = pd.Timestamp(date_time)
 
-    uncontrolled_power_contribution_per_component, uncontrolled_power_balance = _get_uncontrolled_power_contributions(components)
-
-    # Making the inclusion optional for performance reasons
-    components_state = {}
-    if include_components_state:
-        components_state = _get_components_state(components)
+    power_balances, power_contributions, components_states = _get_state_values(
+        components,
+        include_components_state,
+    )
 
     return State(
         time_step=time_step,
         date_time=date_time,
-        uncontrolled_power_balance=uncontrolled_power_balance,
-        uncontrolled_power_contribution_per_component=uncontrolled_power_contribution_per_component,
-        components_states=components_state,
+        uncontrolled_power_balance_per_bus=power_balances,
+        uncontrolled_power_contribution_per_component_and_bus=power_contributions,
+        components_states=components_states,
     )
 
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
+def _get_state_values(
+        components: List[ComponentABC],
+        include_components_state: bool,
+        ) -> tuple[dict[Bus, float], dict[str, PowerContribution], dict]:
+    power_balances = {ELECTRICITY_BUS: 0.0}
+    power_contributions: dict[str, PowerContribution] = {}
+    components_states = {}
 
-def _get_uncontrolled_power_contributions(components: List[ComponentABC]) -> tuple[dict[str, float], float]:
-    """
-    Calculates each component's uncontrolled power contribution and the resulting uncontrolled power balance during the
-    defined `time_step`.
-    """
-    uncontrolled_power_contribution_per_component: dict[str, float] = {}
-    uncontrolled_power_balance = 0.0
     for component in components:
         if isinstance(component, ContributesToPowerBalanceMixin):
-            components_power_contribution = component.uncontrolled_power_contribution()
-            uncontrolled_power_contribution_per_component[component.label] = components_power_contribution
-            uncontrolled_power_balance += components_power_contribution
-    return uncontrolled_power_contribution_per_component, uncontrolled_power_balance
+            component_power_contributions = dict(component.uncontrolled_power_contributions())
+            power_contributions[component.label] = component_power_contributions
+            for power_bus, power_contribution in component_power_contributions.items():
+                power_balances[power_bus] = power_balances.get(power_bus, 0.0) + power_contribution
 
+        if include_components_state and isinstance(component, PublishesStateMixin):
+            components_states[component.label] = component.get_state()
 
-def _get_components_state(components: List[ComponentABC]) -> dict:
-    results = {}
-    for component in components:
-        if isinstance(component, PublishesStateMixin):
-            results[component.label] = component.get_state()
-    return results
+    return power_balances, power_contributions, components_states

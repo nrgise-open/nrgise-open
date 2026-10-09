@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import numpy as np
 import pytest
 
@@ -12,7 +13,7 @@ from tests.helpers import build_test_state
 
 def test_self_consumption_controller_charge_when_generation():
     controller = SelfConsumptionController(storage_label='battery')
-    state = build_test_state(uncontrolled_power_balance=10)
+    state = build_test_state(uncontrolled_power_balance_per_bus={'electricity': 10})
     action, _ = controller.get_action(state)
     # Remember: negative means charge the storage
     assert action == {'battery': -10}
@@ -20,7 +21,7 @@ def test_self_consumption_controller_charge_when_generation():
 
 def test_self_consumption_controller_discharge_when_demand():
     controller = SelfConsumptionController(storage_label='battery')
-    state = build_test_state(uncontrolled_power_balance=-10)
+    state = build_test_state(uncontrolled_power_balance_per_bus={'electricity': -10})
     action, _ = controller.get_action(state)
     # Remember: positive means discharge the storage
     assert action == {'battery': 10}
@@ -42,7 +43,7 @@ def test_self_consumption_controller_noop_when_same():
                          )
 def test_peak_shaving_controller_cuts_at_cut_off_power_value(residual_power_level, expected_storage_control_action):
     controller = PeakShavingController(cut_off_power_value=-100, storage_label='battery')
-    state = build_test_state(uncontrolled_power_balance=residual_power_level)
+    state = build_test_state(uncontrolled_power_balance_per_bus={'electricity': residual_power_level})
     action, _ = controller.get_action(state)
     assert action == {'battery': expected_storage_control_action}
 

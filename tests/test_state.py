@@ -1,16 +1,55 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import pandas as pd
 
+from nrgise.common.constants import ELECTRICITY_BUS
 from nrgise.common.state import build_state
-from nrgise.components import PowerProfile
+from nrgise.components import Load, PowerProfile
+from nrgise.components.grid_builder.grid import Grid
+from nrgise.components.pv.pv import Pv
+from nrgise.energy_system import EnergySystem
 from tests.helpers import build_dummy_data, build_energy_system_with_multiple_empty_batteries
 
 
-def test_get_power_levels():
-    pv_system_1 = PowerProfile(label='pv_1', power_profile=[1, 1, 1])
-    pv_system_2 = PowerProfile(label='pv_2', power_profile=[2, 2, 2])
-    state = build_state([pv_system_1, pv_system_2], time_step=0)
-    assert state.uncontrolled_power_contribution_per_component == {'pv_1': 1, 'pv_2': 2}
-    assert state.uncontrolled_power_balance == 3
+def test_get_power_levels_electricity_only():
+    es = EnergySystem(time_index=pd.DatetimeIndex(build_dummy_data()[0:3].index))
+    es.add_components(Grid(label='grid'),
+                       PowerProfile(label='pv_1', power_profile=[1, 1, 1]),
+                       Pv(label='pv_2', power_profile=[2, 2, 2]))
+    state = es.reset()
+
+    assert state.uncontrolled_power_contribution_per_component_and_bus == {
+        'pv_1': {ELECTRICITY_BUS: 1},
+        'pv_2': {ELECTRICITY_BUS: 2},
+    }
+    assert state.uncontrolled_power_balance_per_bus == {ELECTRICITY_BUS: 3}
+
+
+def test_get_power_levels_mixed():
+    # Load can be added by concrete Load component or by PowerProfile. Both should add up.
+    es = EnergySystem(time_index=pd.DatetimeIndex(build_dummy_data()[0:3].index))
+    es.add_components(Grid(label='grid'),
+                       PowerProfile(label='load', power_profile=[-1, -1, -1]),
+                       Load(label='load_2', power_profile=[-2, -1, -1]),
+                       PowerProfile(label='heating', power_bus='heat_40c', power_profile=[-2, -2, -2]),
+                       Load(label='heating_2', power_bus='heat_40c', power_profile=[-3, -2, -2]),
+                       PowerProfile(label='heating_90c', power_bus='heat_90c', power_profile=[-20, -20, -20]),
+                       Load(label='heating_90_c_2', power_bus='heat_90c', power_profile=[-30, -20, -20]),
+                       )
+    state = es.reset()
+
+    assert state.uncontrolled_power_contribution_per_component_and_bus == {
+        'load': {ELECTRICITY_BUS: -1},
+        'load_2': {ELECTRICITY_BUS: -2},
+        'heating': {'heat_40c': -2},
+        'heating_2': {'heat_40c': -3},
+        'heating_90c': {'heat_90c': -20},
+        'heating_90_c_2': {'heat_90c': -30},
+    }
+    assert state.uncontrolled_power_balance_per_bus == {
+        ELECTRICITY_BUS: -3,
+        'heat_40c': -5,
+        'heat_90c': -50,
+    }
 
 
 def test_build_state_contains_components_states():
@@ -26,6 +65,16 @@ def test_build_state_contains_components_states():
            state.components_states['battery2']['soc'] == 0 and \
            state.components_states['battery3']['soc'] == 0 and \
            state.components_states['battery4']['soc'] == 0
+
+
+def test_state_empty_energy_system():
+    es = EnergySystem(time_index=pd.DatetimeIndex(build_dummy_data().index))
+    es.add_components(Grid(label='grid'))
+    state = es.reset()
+
+    assert state.uncontrolled_power_balance_per_bus == {'electricity': 0}
+    assert state.components_states == {}
+    assert state.uncontrolled_power_contribution_per_component_and_bus == {}
 
 
 def test_state_attr_getter():

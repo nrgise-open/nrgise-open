@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from nrgise.components.capabilities import (
     ContributesToPowerBalanceMixin,
     ControllableMixin,
@@ -10,6 +11,7 @@ from nrgise.components.component_abc import ComponentABC
 from nrgise.components.grid_builder import Generator, Grid, GridBuilderABC
 from nrgise.components.load import Load
 from nrgise.components.power_profile import PowerProfile
+from nrgise.components.power_to_heat import PowerToHeat
 from nrgise.components.pv import Pv, PvCurtailable
 from nrgise.components.storage import AgingLinearCapacityWrapper, Battery, StorageABC, StorageWrapperABC
 
@@ -26,6 +28,7 @@ __all__ = [
     "GridBuilderABC",
     "Load",
     "PowerProfile",
+    "PowerToHeat",
     "PublishesStateMixin",
     "Pv",
     "PvCurtailable",

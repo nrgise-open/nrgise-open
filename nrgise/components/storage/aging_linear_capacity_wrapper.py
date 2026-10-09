@@ -1,4 +1,5 @@
 from nrgise.common.constants import SECONDS_PER_YEAR
+from nrgise.common.types import PowerContribution
 from nrgise.components.storage.helper import calc_equivalent_cycle
 from nrgise.components.storage.storage_abc import StorageABC
 from nrgise.components.storage.storage_wrapper_abc import StorageWrapperABC
@@ -68,10 +69,11 @@ class AgingLinearCapacityWrapper(StorageWrapperABC):
         self._calendric_soh_loss = 0.0
         self._replace_storage_when_eol_reached = replace_storage_when_eol_reached
 
-    def set_power_contribution(self, power: float) -> float:
+    def set_power_contribution(self, power: float) -> PowerContribution:
         power_contribution = self.storage.set_power_contribution(power)
+        applied_power = power_contribution[self.power_bus]
         self._equivalent_cycles += calc_equivalent_cycle(
-            power=power_contribution,
+            power=applied_power,
             time_delta_seconds=self.storage.time_delta_seconds,
             # Note: The cycling counting is done by the actual capacity and not by the initial capacity here !
             energy_capacity=self.storage.capacity,

@@ -50,7 +50,7 @@ def test_muc_action(load, generation, expected_action, expected_controller):
         forecast_length=1,
         storage_label='battery',
     )
-    state = build_test_state(uncontrolled_power_balance=generation[0] + load[0])
+    state = build_test_state(uncontrolled_power_balance_per_bus={'electricity': generation[0] + load[0]})
     action, controller_state = controller.get_action(state)
     assert action == {'battery': expected_action}
     assert controller_state['active_controller'] is expected_controller
@@ -69,14 +69,14 @@ def test_muc_will_switch_to_peak_shaving_shortly_before_and_during_peak():
     for time_step in [0, 1, 4]:
         state = build_test_state(
             time_step=time_step,
-            uncontrolled_power_balance=load_data[time_step] + generation_data[time_step],
+            uncontrolled_power_balance_per_bus={'electricity': load_data[time_step] + generation_data[time_step]},
         )
         _, controller_state = controller.get_action(state)
         assert controller_state['active_controller'] is SelfConsumptionController
     for time_step in [2, 3]:
         state = build_test_state(
             time_step=time_step,
-            uncontrolled_power_balance=load_data[time_step] + generation_data[time_step],
+            uncontrolled_power_balance_per_bus={'electricity': load_data[time_step] + generation_data[time_step]},
         )
         _, controller_state = controller.get_action(state)
         assert controller_state['active_controller'] is PeakShavingController

@@ -1,3 +1,4 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 import sys
 
 import pandas as pd
@@ -39,8 +40,18 @@ def investigate_optimal_run(result, results_dir_path: str = 'results'):
     plot_data = run_data[1500:2000]
     plot_x_data = run_data[1500:2000].index
     fig, ax = plt.subplots()
-    ax.step(plot_x_data,plot_data['uncontrolled_power_contribution_per_component.load'], where="post", label='Load')
-    ax.step(plot_x_data,plot_data['uncontrolled_power_contribution_per_component.pv'], where="post", label='Generation')
+    ax.step(
+        plot_x_data,
+        plot_data['uncontrolled_power_contribution_per_component_and_bus.load.electricity'],
+        where="post",
+        label='Load',
+    )
+    ax.step(
+        plot_x_data,
+        plot_data['uncontrolled_power_contribution_per_component_and_bus.pv.electricity'],
+        where="post",
+        label='Generation',
+    )
     ax.step(plot_x_data,plot_data['grid_builder_usage'], where="post", label='Grid usage')
     ax.step(plot_x_data, plot_data['power_applied'], where="post", label='Battery Power')
     ax.set_ylabel('Power in kW', fontsize=14)

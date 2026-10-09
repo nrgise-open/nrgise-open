@@ -77,7 +77,7 @@ def test_set_power_is_0_when_ev_is_disconnected():
         time_delta_seconds=900,
     )
     assert cp._electric_vehicle_connected() is False
-    assert cp.set_power_contribution(-100) == 0
+    assert cp.set_power_contribution(-100)['electricity'] == 0
 
 
 @pytest.mark.parametrize(
@@ -106,7 +106,7 @@ def test_set_power_ev_connected(discharge_limit, charge_limit, ev_capacity, powe
         initial_soc=0.5,
         time_delta_seconds=3600,
     )
-    assert cp.set_power_contribution(power_set) == expected
+    assert cp.set_power_contribution(power_set)['electricity'] == expected
 
 @pytest.mark.parametrize(
     "power, max_discharge, max_charge, expected",

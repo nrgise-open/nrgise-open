@@ -33,6 +33,7 @@ nav:
       - Data Profiles (PV, Load, ...): api/components/data-profile-components.md
       - Grid: api/components/grid.md
       - Storage: api/components/storage.md
+      - Conversion: api/components/conversion.md
     - Controllers: 
       - Base Class: api/controllers/controller.md
       - Single Application: api/controllers/single-application.md

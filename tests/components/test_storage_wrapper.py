@@ -1,3 +1,4 @@
+from nrgise import PowerContribution
 from nrgise.components import Battery, StorageWrapperABC
 
 
@@ -9,9 +10,9 @@ class DummyWrapper(StorageWrapperABC):
     def reset(self):
         pass
 
-    def set_power_contribution(self, power: float) -> float:  # noqa
+    def set_power_contribution(self, power: float) -> PowerContribution:  # noqa
         self.capacity = self.capacity * 0.9
-        return 0
+        return {self.power_bus: 0.0}
 
 
 def test_capacity_is_in_sync():

@@ -38,13 +38,13 @@ class MyComponent(ComponentABC):
 
 Mixins define optional capabilities. You can combine multiple mixins in one component.
 
-- `ControllableMixin` makes components receive a control action through `set_power_contribution(...)` and must return the power they actually contributed (power asked for via an action could differ from power returned, e.g. asking for power from an empty battery).
+- `ControllableMixin` makes components receive a scalar requested power through `set_power_contribution(...)`. The component determines the affected buses and returns the power it actually contributed as a `PowerContribution` (power asked for via an action could differ from power returned, e.g. asking for power from an empty battery).
 - `TimeStepAwareMixin` makes components be notified when the simulation advances to the next time step via `handle_time_step_update(...)`. This might be used for components having an internal data profile which needs to be advanced according to the new time step.
 - `DataProfileMixin` marks a component as having an associated data profile. Unlike the other mixins, it does not affect the simulation itself. Instead, it is used by utility functions and validation logic, for example to ensure that all data profiles in an `EnergySystem` have the same length or to enable `EnergySystem.stretch_time()`.
-- `ContributesToPowerBalanceMixin` makes components add their uncontrollable power contribution (kW) via `uncontrolled_power_contribution()` to the `State` in each time step.
+- `ContributesToPowerBalanceMixin` makes components add their uncontrolled power contributions (kW) per named bus via `uncontrolled_power_contributions()` to the `State` in each time step.
 - `PublishesStateMixin` makes the component dump arbitrary information (dict) into `State` through `get_state()` to be visible to the controller and in the results.
   
-**Note:** Both `ContributesToPowerBalanceMixin` and `PublishesStateMixin` contribute information to the `State`, which is passed to the controller to compute the action. However, they serve different purposes. `ContributesToPowerBalanceMixin` contributes a well-defined physical quantity: the component's uncontrollable power contribution (in kW) for the current time step (positive: adding power; negative: taking power). `PublishesStateMixin`, on the other hand, allows arbitrary information to be exposed as a dictionary.
+**Note:** Both `ContributesToPowerBalanceMixin` and `PublishesStateMixin` contribute information to the `State`, which is passed to the controller to compute the action. However, they serve different purposes. `ContributesToPowerBalanceMixin` contributes power per named bus for the current time step (positive: supplying a bus; negative: consuming from it). `PublishesStateMixin`, on the other hand, allows arbitrary information to be exposed as a dictionary.
 
 **Additional Information**
 
@@ -58,6 +58,7 @@ The example below shows a controllable electric heater which dumps information i
 ```python
 from typing import Any
 
+from nrgise import ELECTRICITY_BUS, PowerContribution
 from nrgise.components import ControllableMixin, PublishesStateMixin
 
 
@@ -74,14 +75,15 @@ class ElectricHeater(ControllableMixin, PublishesStateMixin):
     def reset(self):
         self._temperature_c = self._initial_temperature_c
 
-    def set_power_contribution(self, power: float) -> float:
+    # Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
+    def set_power_contribution(self, power: float) -> PowerContribution:
         # Positive = inject to system, negative = consume from system.
         # A heater consumes power, so we limit to non-positive values.
         assert power <= 0.0, "Heater can only consume power (negative values)."
 
         # Very simple thermal model example.
         self._temperature_c += (-power) * 0.01
-        return power
+        return {ELECTRICITY_BUS: power}
 
     def get_state(self) -> dict[str, Any]:
         return {
@@ -107,7 +109,7 @@ contributed to the energy system in this time step. Note that it is just a reque
 
 Whenever `get_action(state)` is called, it returns: 
 
-- A dict mapping `controllable_label -> requested power contribution in kW`
+- A dict mapping `controllable_label -> requested power contribution in kW`. The controllable, not the controller, determines which bus receives the applied contribution.
 - Optional additional information, which is stored in simulation results.
 
 ### Minimal example:
@@ -115,6 +117,7 @@ Whenever `get_action(state)` is called, it returns:
 ```python
 from typing import Any
 
+from nrgise import ELECTRICITY_BUS
 from nrgise.common.state import State
 from nrgise.controllers import ControllerABC
 
@@ -125,7 +128,7 @@ class MyController(ControllerABC):
 
     def get_action(self, state: State) -> tuple[dict[str, float], Any]:
         # Example: compensate current uncontrolled power balance
-        power_setpoint = -1 * state.uncontrolled_power_balance
+        power_setpoint = -1 * state.uncontrolled_power_balance_per_bus[ELECTRICITY_BUS]
 
         action = {
             self._storage_label: power_setpoint,

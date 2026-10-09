@@ -1,9 +1,11 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Tuple
 
 import pandas as pd
 
+from nrgise.common.constants import ELECTRICITY_BUS
 from nrgise.common.helper import duplicate_data, get_time_delta_seconds
 from nrgise.common.types import GenericSequence
 from nrgise.components.grid_builder.grid_builder_abc import GridBuilderABC
@@ -51,7 +53,7 @@ def stretch_data_profile(data_profile: GenericSequence,
     return replicated_data, target_date_time_index
 
 
-def get_component_powers_from_results(energy_system: EnergySystem, results: pd.DataFrame) -> pd.DataFrame:
+def get_component_electrical_powers_from_results(energy_system: EnergySystem, results: pd.DataFrame) -> pd.DataFrame:
     """
     Convenience function to extract per-component power values from simulation results.
 
@@ -66,9 +68,22 @@ def get_component_powers_from_results(energy_system: EnergySystem, results: pd.D
 
     for component in energy_system.components:
         if component.label in energy_system.controllable_components:
-            component_powers[component.label] = results['power_applied.' + component.label]
+            result_column = (
+                'power_applied.' + component.label + '.' + ELECTRICITY_BUS
+            )
+            if result_column in results:
+                component_powers[component.label] = results[result_column]
+            elif len(energy_system.controllable_components) == 1 and 'power_applied' in results:
+                component_powers[component.label] = results['power_applied']
         elif component.label not in energy_system.controllable_components and not isinstance(component, GridBuilderABC):
-            component_powers[component.label] = results['uncontrolled_power_contribution_per_component.' + component.label]
+            result_column = (
+                'uncontrolled_power_contribution_per_component_and_bus.'
+                + component.label
+                + '.'
+                + ELECTRICITY_BUS
+            )
+            if result_column in results:
+                component_powers[component.label] = results[result_column]
         elif isinstance(component, GridBuilderABC):
             component_powers[component.label] = results['grid_builder_usage']
     return component_powers

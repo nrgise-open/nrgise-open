@@ -1,5 +1,7 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from typing import Any, Dict, Tuple
 
+from nrgise.common.constants import ELECTRICITY_BUS
 from nrgise.common.state import State
 from nrgise.components.storage.battery import Battery
 from nrgise.controllers.controller_abc import ControllerABC
@@ -63,6 +65,7 @@ class SelfConsumptionPeakShavingParallelController(ControllerABC):
             initial_soc=storage_model.initial_soc,
             efficiency_charge=storage_model.eta_charge,
             efficiency_discharge=storage_model.eta_discharge,
+            power_bus=storage_model.power_bus,
         )
         self._virtual_self_consumption_battery = Battery(
             label='virtual self consumption battery',
@@ -72,20 +75,32 @@ class SelfConsumptionPeakShavingParallelController(ControllerABC):
             initial_soc=storage_model.initial_soc,
             efficiency_charge=storage_model.eta_charge,
             efficiency_discharge=storage_model.eta_discharge,
+            power_bus=storage_model.power_bus,
         )
 
     def get_action(self, state: State) -> Tuple[Dict[str, float], Any]:
         # 1. Do self consumption optimisation using the virtual self consumption storage
         required_self_consumption_power, _ = self._self_consumption_controller.get_action(state)
         # Accessing 0 element as returned power is always an array
-        self_consumption_power_applied = self._virtual_self_consumption_battery.set_power_contribution(
+        self_consumption_contribution = self._virtual_self_consumption_battery.set_power_contribution(
             sum(required_self_consumption_power.values()))
+        self_consumption_power_applied = self_consumption_contribution[
+            self._virtual_self_consumption_battery.power_bus
+        ]
 
         # 2. Update State with the power fed into the grid from the virtual self consumption storage
         # Reminder: Negative self_consumption_power means charging aka. "loosing/consuming" power !!!
         virtual_state = State(
-            uncontrolled_power_balance=state.uncontrolled_power_balance + self_consumption_power_applied,
-            uncontrolled_power_contribution_per_component=None,  # type: ignore
+            uncontrolled_power_balance_per_bus={
+                **state.uncontrolled_power_balance_per_bus,
+                ELECTRICITY_BUS: (
+                    state.uncontrolled_power_balance_per_bus[ELECTRICITY_BUS]
+                    + self_consumption_power_applied
+                ),
+            },
+            uncontrolled_power_contribution_per_component_and_bus=(
+                state.uncontrolled_power_contribution_per_component_and_bus
+            ),
             time_step=None,  # type: ignore
             components_states=None,  # type: ignore
             date_time=state.date_time,
@@ -94,8 +109,11 @@ class SelfConsumptionPeakShavingParallelController(ControllerABC):
         # 3. Do Peak shaving using virtual peak shaving storge
         required_peak_shaving_power, _ = self._peak_shaving_controller.get_action(virtual_state)
         total_required_peak_shaving_power = sum(required_peak_shaving_power.values())
-        peak_shaving_power_applied = self._virtual_peak_shaving_battery.set_power_contribution(
+        peak_shaving_contribution = self._virtual_peak_shaving_battery.set_power_contribution(
             total_required_peak_shaving_power)
+        peak_shaving_power_applied = peak_shaving_contribution[
+            self._virtual_peak_shaving_battery.power_bus
+        ]
 
         # 4. Calculate action for physical storage based on both virtual actions
         action = self_consumption_power_applied + peak_shaving_power_applied

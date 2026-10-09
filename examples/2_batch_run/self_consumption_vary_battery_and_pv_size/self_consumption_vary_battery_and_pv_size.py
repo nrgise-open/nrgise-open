@@ -9,7 +9,7 @@ import plot_ps_be
 import nrgise
 from nrgise import BatchRun, EnergySystem, Simulation
 from nrgise.common import get_time_delta_seconds
-from nrgise.components import Battery, Grid, Load, Pv
+from nrgise.components import Battery, Load, Grid, Pv
 from nrgise.controllers import SelfConsumptionController
 from nrgise.economics.tools import stretch_data_over_investment_horizon
 

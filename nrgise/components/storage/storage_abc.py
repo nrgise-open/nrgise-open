@@ -1,5 +1,7 @@
+# Assisted-by: OpenCode:fhgenie-pro/gpt-5.6-sol
 from abc import ABC, abstractmethod
 
+from nrgise.common.types import Bus, PowerContribution
 from nrgise.components.capabilities.controllable_mixin import ControllableMixin
 from nrgise.components.capabilities.publishes_state_mixin import PublishesStateMixin
 
@@ -33,8 +35,13 @@ class StorageABC(ControllableMixin, PublishesStateMixin, ABC):
     def soc(self) -> float:
         pass
 
+    @property
     @abstractmethod
-    def set_power_contribution(self, power: float) -> float:
+    def power_bus(self) -> Bus:
+        pass
+
+    @abstractmethod
+    def set_power_contribution(self, power: float) -> PowerContribution:
         """
         Sets the power (kW) of the storage during the upcoming simulated time step.
         Positive values cause a discharge of the storage, whereas negative values cause a charge.
@@ -42,7 +49,7 @@ class StorageABC(ControllableMixin, PublishesStateMixin, ABC):
         Args:
             power: The amount of power (kW) to charge or discharge. Positive = discharge; Negative = charge.
         Returns:
-            Actual power charged or discharged by the storage.
+            Actual power charged or discharged by the storage on its power bus.
         """
 
     @staticmethod

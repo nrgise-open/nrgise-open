@@ -2,8 +2,8 @@ import pandas as pd
 import pytest
 
 from nrgise import EnergySystem, Simulation
-from nrgise.components import Grid, Load, Pv
-from nrgise.tools import get_component_powers_from_results, stretch_data_profile
+from nrgise.components import Load, Grid, Pv
+from nrgise.tools import get_component_electrical_powers_from_results, stretch_data_profile
 
 
 @pytest.mark.parametrize("end_timestamp, simulation_length",
@@ -28,5 +28,5 @@ def test_get_component_powers_from_results():
     es.add_components(load, pv, grid)
     simulation = Simulation(es)
     results = simulation.run()
-    component_powers = get_component_powers_from_results(es, results)
+    component_powers = get_component_electrical_powers_from_results(es, results)
     assert list(component_powers['Grid']) == [-4, -3, -2, -1, 0]
