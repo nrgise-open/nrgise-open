@@ -51,11 +51,11 @@ class GridBuilderABC(ComponentABC):
                 raised in the `Simulation`.
         """
         if requested_power > self._power_supply_limit:
-            raise ValueError('Can not deliver sufficient power in order to balance the energy system. '
-                             'Make sure power_supply_limit is positive.')
+            raise ValueError(f'Can not deliver {requested_power}kW while supply limit set to {self._power_supply_limit}kW. '
+                             'Make sure `power_supply_limit` is positive.')
         if requested_power < self._feed_in_limit:
-            raise ValueError('Can not accept feed in power, over feed-in capacity limit. '
-                             'Make sure feed_in_limit is negative.')
+            raise ValueError(f'Can not accept {requested_power}kW feed in, while feed-in limit set to {self._feed_in_limit}. '
+                             'Make sure `feed_in_limit` is negative.')
         return requested_power
 
     def reset(self) -> None:

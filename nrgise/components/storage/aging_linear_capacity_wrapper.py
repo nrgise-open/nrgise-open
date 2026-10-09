@@ -92,6 +92,19 @@ class AgingLinearCapacityWrapper(StorageWrapperABC):
         return power_contribution
 
     def get_state(self) -> dict[str, float]:
+        """
+        Returns state of wrapped battery plus additional aging related properties.
+
+
+        Returns:
+            A dictionary containing the following keys:
+
+                - ``soc``: Current soc of the battery, in [0,1].
+                - ``cycling_soh_loss``: Current loss on state of health caused by cycling, in [0, 1-eol].
+                - ``calendaric_soh_loss``: Current loss on state of health caused by calendaric aging, in [0, 1-eol].
+                - ``capacity``: Current capacity in kWh.
+                - ``equivalent_cycles``: Full equivalent cycles.
+        """
         return {
             **self.storage.get_state(),
             'soh': self._soh,
